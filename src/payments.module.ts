@@ -17,6 +17,9 @@ import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notificat
 import {VendorAController} from './adapter/out/vendors/vendorA/vendorA.controller';
 import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controller';
 
+import {PostCreateTransferUseCase} from '../domain/src/usecase/post-create-transfer.usecase';
+import {PostCreateTransferHandler} from './handler/post-create-transfer.handler';
+
 @Module({
   imports: [HttpModule],
   controllers: [HealthController, ApiPaymentsController],
@@ -77,6 +80,13 @@ import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controlle
       inject: ['DomainDataBaseRepository', 'BackOfficeNotification'],
     },
     {
+      provide: 'PostCreateTransferUseCase',
+      useFactory: () => {
+        return new PostCreateTransferUseCase();
+      },
+      inject: [],
+    },
+    {
       provide: 'VendorAController',
       useFactory: (httpService: HttpService) => {
         return new VendorAController(httpService);
@@ -92,6 +102,7 @@ import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controlle
     },
     HandlerGetFeature,
     HandlerGetServerHealthStatus,
+    PostCreateTransferHandler,
   ],
 })
 export class PaymentsModule {}

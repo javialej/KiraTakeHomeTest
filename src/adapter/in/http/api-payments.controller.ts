@@ -1,16 +1,20 @@
 import {Controller, Get, Param, Post, Body} from '@nestjs/common';
-import {ApiBearerAuth, ApiParam, ApiTags} from '@nestjs/swagger';
+import {ApiParam, ApiTags} from '@nestjs/swagger';
 import {HTTPResponse} from '../../../model/dto/http-response.model';
 import {HandlerGetFeature} from '../../../handler/get-feature.handler';
 import {GetFeatureRequest} from '../../../model/dto/feature.type';
 import {GetFeaturePipe} from './get-feature.pipe';
-import {SUCCESS_STATES_MESSAGES} from '../../../common/response-states/success-states.messages';
 import {CreateTransferDto} from './dto/create-transfer.dto';
+import {PostCreateTransferHandler} from '../../../handler/post-create-transfer.handler';
+import {PostCreateTransferPipe} from './post-create-transfer.pipe';
 
 @ApiTags('Api Payments')
 @Controller('api-payments')
 export class ApiPaymentsController {
-  constructor(private readonly handlerGetFeature: HandlerGetFeature) {}
+  constructor(
+    private readonly handlerGetFeature: HandlerGetFeature,
+    private readonly postCreateTransferHandler: PostCreateTransferHandler,
+  ) {}
 
   @Get('user/:email')
   @ApiParam({
@@ -26,18 +30,9 @@ export class ApiPaymentsController {
   }
 
   @Post('transfer')
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async createTransfer(
-    @Body() createTransferDto: CreateTransferDto,
+  async postCreateTransfer(
+    @Body(new PostCreateTransferPipe()) createTransferDto: CreateTransferDto,
   ): Promise<HTTPResponse> {
-    // In a real implementation, this would call a handler to process the transfer.
-    // eslint-disable-next-line no-console
-    console.log('Received transfer request:', createTransferDto);
-    return new HTTPResponse(
-      201,
-      SUCCESS_STATES_MESSAGES.Success.code,
-      'Transfer request received.',
-      createTransferDto,
-    );
+    return this.postCreateTransferHandler.execute(createTransferDto);
   }
 }
