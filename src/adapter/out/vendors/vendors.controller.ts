@@ -26,16 +26,16 @@ export class VendorsController implements IVendors {
         condition: (request) => request.amount <= 100,
         handler: this.vendorA,
       },
-      // {
-      //   name: 'VendorC',
-      //   condition: (request) => request.amount > 500, // Example condition for VendorC
-      //   handler: this.vendorC,
-      // },
       {
         name: 'VendorB',
         condition: () => true, // Default catch-all strategy
         handler: this.vendorB,
       },
+      // {
+      //   name: 'VendorC',
+      //   condition: (request) => request.amount > 500, // Example condition for VendorC
+      //   handler: this.vendorC,
+      // },
     ];
   }
 

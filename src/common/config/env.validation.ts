@@ -9,19 +9,6 @@ class EnvironmentVariables {
   PORT!: number;
 
   @IsString()
-  AWS_REGION!: string;
-
-  @IsString()
-  @IsOptional()
-  AWS_DYNAMODB_ENDPOINT!: string;
-
-  @IsString()
-  AWS_DYNAMODB_TABLE_DOMAIN!: string;
-
-  @IsString()
-  AWS_COGNITO_USER_POOL_ID!: string;
-
-  @IsString()
   DB_HOST!: string;
 
   @IsNumber()

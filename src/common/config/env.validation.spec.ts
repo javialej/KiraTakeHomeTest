@@ -13,15 +13,11 @@ describe('EnvironmentVariables', () => {
 
       const requiredParms = {
         PORT: 3000,
-        AWS_REGION: 'us-east-1',
         DB_HOST: 'dummy',
         DB_NAME: 'dummy',
         DB_PASSWORD: 'dummy',
         DB_PORT: 5432,
         DB_USERNAME: 'dummy',
-        AWS_DYNAMODB_ENDPOINT: 'http://localhost:3000',
-        AWS_DYNAMODB_TABLE_DOMAIN: 'dummy',
-        AWS_COGNITO_USER_POOL_ID: 'dummy',
         SERVICE_NAME: 'dummy',
       };
 
