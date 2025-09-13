@@ -1,49 +1,124 @@
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-all.svg" width="200" alt="Nest Logo" /></a>
+</p>
 
+<p align="center">
+  A production-ready, cross-border payments API built with NestJS, Hexagonal Architecture, and a secure, automated infrastructure on Google Cloud.
+</p>
 
-[![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white&style=plastic)](https://nestjs.com/)
-[![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white&style=plastic)](https://nodejs.org)
-[![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white&style=plastic)](https://www.npmjs.com/)
-[![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white&style=plastic)](https://www.typescriptlang.org/)
-[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kira-take-home-test&metric=coverage)](https://sonarcloud.io/summary/new_code?id=kira-take-home-test)
+<p align="center">
+  <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+  <a href="https://github.com/google/gts" target="_blank"><img src="https://img.shields.io/badge/code%20style-google-blueviolet.svg" alt="Code Style: Google" /></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=kira-take-home-test" target="_blank"><img src="https://sonarcloud.io/api/project_badges/measure?project=kira-take-home-test&metric=coverage" alt="Coverage" /></a>
+</p>
 
-# Payments API Module - Kira Take-Home Test: Platform Engineer
+---
 
-## Description
+## About This Project
 
-This repository contains the infrastructure for a cross-border payments API, designed for high performance and extensibility. The initial implementation handles USDC to COP (Colombian Peso) transfers, integrating with multiple off-ramp vendors and verifying each transaction via its `txhash`.
+This repository contains a robust and extensible cross-border payments API designed for high performance and security. The initial implementation handles USDC to COP (Colombian Peso) transfers, integrating with multiple off-ramp vendors and verifying each transaction via its `txhash`.
 
-The platform's hexagonal architecture ensures that new vendors can be added with minimal effort. The primary focus of this project is the infrastructure, observability, automation, and SOC 2 alignment, providing a solid foundation for a secure and scalable payments service.
+The project's primary focus is on **infrastructure, observability, automation, and security**, providing a solid, SOC 2-aligned foundation for a scalable payments service.
+
+-   **Architecture**: [Hexagonal (Ports & Adapters)](./ARCHITECTURE.md) for a clean separation of concerns.
+-   **Infrastructure**: Fully automated with Terraform on **Google Cloud Platform (GCP)**.
+-   **CI/CD**: Automated build, test, and deployment pipelines using **GitHub Actions**.
+-   **Security**: Secure, keyless authentication between CI/CD and GCP using **Workload Identity Federation**.
 
 ## Table of Contents
 
-- [Payments API Module - Kira Take-Home Test: Platform Engineer](#payments-api-module---kira-take-home-test-platform-engineer)
-  - [Description](#description)
-  - [Table of Contents](#table-of-contents)
-  - [Documentation](#documentation)
-  - [Hexagonal Architecture](#hexagonal-architecture)
-  - [Code Coverage](#code-coverage)
-  - [Installation](#installation)
-  - [Running the App](#running-the-app)
-  - [Testing](#testing)
-  - [Local Testing with Docker](#local-testing-with-docker)
-    - [Prerequisites](#prerequisites)
-    - [Running the Application Locally](#running-the-application-locally)
-    - [Cleanup](#cleanup)
-  - [Support](#support)
+- [Running the Application Locally](#running-the-application-locally)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
+- [CI/CD Pipelines](#cicd-pipelines)
+- [Further Documentation](#further-documentation)
 
-## Documentation
+---
 
--   [**Architecture**](./ARCHITECTURE.md): An in-depth explanation of the hexagonal architecture, infrastructure design, vendor extensibility, and transaction verification flow.
--   [**SOC 2 Alignment**](./SOC2.md): A description of how the infrastructure and processes align with SOC 2 principles.
+## Running the Application Locally
 
-## Hexagonal Architecture
+You can run the application locally using Docker, which ensures a consistent and isolated environment.
 
-This project is built using a hexagonal architecture (also known as ports and adapters). This architectural style isolates the application's core logic from external concerns, such as databases, APIs, and frameworks. This separation of concerns makes the application easier to test, maintain, and evolve.
+### Prerequisites
 
-For a more detailed explanation of the hexagonal architecture and how it is implemented in this project, please see the [**Architecture**](./ARCHITECTURE.md) document.
+-   [Docker](https://www.docker.com/get-started) must be installed and running on your machine.
+-   You must have a `.env` file. You can create one by copying the example:
+    ```bash
+    cp .env.example .env
+    ```
 
-## Code Coverage
+### Step 1: Build and Run the Container
+
+This project includes a `docker-compose.yml` file to simplify the local setup.
+
+```bash
+docker-compose up --build
+```
+
+This command will:
+1.  Build the Docker image for the application.
+2.  Start the container in the foreground, so you can see the application logs.
+3.  Make the API available at `http://localhost:3000`.
+
+### Step 2: Send a Test Request
+
+Once the application is running, you can test the primary endpoint using a tool like `curl`. This example simulates a transfer of 100 USDC.
+
+```bash
+curl -X POST \
+  http://localhost:3000/api-payments/transfer \
+  -H 'Content-Type: application/json' \
+  -d '{ "amount": 100, "txhash": "0x123abc..." }'
+```
+
+### Expected Response
+
+A successful request will return a `201 Created` status and a response body similar to this:
+
+```json
+{
+    "meta": {
+        "trace_id": "a2c1a7b7-918a-423e-8483-3f2839f48133"
+    },
+    "code": "OK",
+    "message": "Transfer created successfully",
+    "data": {
+        "status": "CONFIRMED",
+        "transactionId": "0xabc-vendor-a",
+        "provider": "BlockchainVendorA",
+        "rawData": {
+            "transactionStatus": "CONFIRMED",
+            "destinationTransactionHash": "0xabc-vendor-a"
+        }
+    }
+}
+```
+
+### Step 3: Cleanup
+
+To stop and remove the containers and network created by Docker Compose, simply press `Ctrl+C` in the terminal where the container is running, or run the following command from the project root:
+
+```bash
+docker-compose down
+```
+
+---
+
+## Testing
+
+The project has a comprehensive suite of unit tests.
+
+-   **Run all tests:**
+    ```bash
+    npm test
+    ```
+-   **Run tests with coverage report:**
+    ```bash
+    npm run test:cov
+    ```
+
+### Code Coverage
 
 | File                                                          | % Stmts | % Branch | % Funcs | % Lines |
 | ------------------------------------------------------------- | ------- | -------- | ------- | ------- |
@@ -70,154 +145,58 @@ For a more detailed explanation of the hexagonal architecture and how it is impl
 | src/model/exceptions                                          | 100     | 100      | 100     | 100     |
 | src/model/mapper                                              | 100     | 100      | 100     | 100     |
 
-## Installation
+---
 
-1.  **Node.js Version:** This project uses a specific version of Node.js. It is recommended to use a version manager like `nvm` to ensure compatibility. Run `nvm use` to automatically switch to the correct version specified in the `.nvmrc` file.
+## Project Structure
 
-2.  **Install Dependencies:**
-    ```bash
-    npm install
-    ```
+The repository is organized to reflect the Hexagonal Architecture, with a clear separation between the `domain` (core business logic) and `infrastructure` layers.
 
-3.  **Environment Variables:** Create a `.env` file by copying the `.env.example` file. This file is required to store sensitive information and environment-specific configurations.
-
-## Running the App
-
--   `npm run build`: Compiles the TypeScript application into JavaScript.
--   `npm run start`: Starts the compiled application. This is typically used for production.
--   `npm run start:dev`: Starts the application in development mode with live-reloading.
--   `npm run start:debug`: Starts the application in debug mode with the Node.js inspector attached.
--   `npm run start:prod`: Starts the application in production mode.
--   `npm run lint`: Lints the codebase to check for style and syntax errors.
--   `npm run lint:fix`: Lints the codebase and automatically fixes any fixable issues.
-
-## Testing
-
--   `npm test`: Runs all unit tests.
--   `npm run test:cov`: Runs all unit tests and generates a code coverage report.
--   `npm run test:watch`: Runs tests in watch mode, re-running them whenever a file is changed.
-
-## CI/CD Configuration
-
-The CI/CD pipeline is configured to use Google Cloud's Workload Identity Federation for secure authentication from GitHub Actions. This method avoids the need for long-lived service account keys, enhancing security.
-
-### Required Permissions and Secrets
-
-To enable the CI/CD pipeline, you need to configure your GCP project and GitHub repository as follows:
-
-1.  **Workload Identity Federation**: Set up a Workload Identity Pool and Provider in your GCP project to trust GitHub Actions.
-2.  **Service Account**: Create a GCP Service Account with the necessary permissions to manage the resources defined in the Terraform files (e.g., Artifact Registry Administrator, Kubernetes Engine Admin, Compute Network Admin).
-3.  **GitHub Secrets**: Add the following secrets to your GitHub repository. These are used to configure the application environment and connect to the database.
-    *   `GCP_PROJECT_ID`: The unique ID of your Google Cloud project.
-    *   `DB_HOST`: The hostname or IP address of the database server.
-    *   `DB_PORT`: The port number of the database server.
-    *   `DB_USERNAME`: The username for the database connection.
-    *   `DB_PASSWORD`: The password for the database connection.
-    *   `DB_NAME`: The name of the database.
-    *   `SERVICE_NAME`: The name of the service.
-    *   `COLLECTION_NAME`: The name of the Firestore collection.
-
-### How to Add Secrets to GitHub
-
-1.  **Navigate to your GitHub Repository:**
-    Open your web browser and go to your repository page.
-
-2.  **Go to Settings:**
-    Click on the **Settings** tab, located in the main navigation bar of your repository.
-
-3.  **Access Actions Secrets:**
-    In the left sidebar, under the "Security" section, click on **Secrets and variables**, and then select **Actions**.
-
-4.  **Add Each Secret:**
-    Click the **New repository secret** button for each secret you need to add. Enter the secret's name in the "Name" field and its value in the "Secret" field, then click **Add secret**. Repeat this for all the required secrets listed above.
-
-## CI/CD Pipeline Flow
-
-The CI/CD pipeline is defined in the `.github/workflows/cd.yaml` file and is designed to provide a safe and efficient path to production, with automated testing and deployment for development environments.
-
-### Development Workflow (`feature/*` branches)
-
-This workflow is triggered whenever a developer pushes a commit to a branch prefixed with `feature/`.
-
-1.  **Build & Push Docker Image**: The `build` job is triggered, which builds a new Docker image of the application. The image is tagged with the commit SHA and pushed to Google Container Registry (GCR).
-2.  **Deploy to Development**: The `deploy_dev` job starts, creating a unique Terraform workspace for the feature branch (e.g., `feature-new-login`). This provisions a dedicated, isolated environment in GCP.
-3.  **Application Deployment**: The application is deployed to the new GKE cluster using the newly built Docker image.
-
-### Production Workflow (`main` branch)
-
-This workflow is triggered when a feature branch is merged into the `main` branch.
-
-1.  **Build & Push Docker Image**: The `build` job is triggered, creating a new production-ready Docker image.
-2.  **Manual Approval**: The `deploy_prod` job starts but immediately pauses, waiting for manual approval from a designated reviewer in the GitHub `production` environment.
-3.  **Deploy to Production**: Once approved, the job resumes. Terraform selects the `production` workspace and applies the configuration, updating the GKE deployment with the new image.
-
-### Cleanup Workflow (Branch Deletion)
-
-This workflow is triggered when a `feature/*` branch is deleted.
-
-1.  **Destroy Environment**: The `destroy_dev` job is triggered, selecting the Terraform workspace associated with the deleted branch.
-2.  **Resource Cleanup**: `terraform destroy` is executed, tearing down all cloud resources for that environment. This helps manage costs and keeps the cloud environment clean.
-
-## Local Testing with Docker
-
-This project includes a Docker Compose setup that allows you to run and test the application locally without needing to install any dependencies other than Docker.
-
-### Prerequisites
-
--   [Docker](https://www.docker.com/get-started) must be installed and running on your machine.
-
-### Running the Application Locally
-
-1.  **Start the application:**
-
-    ```bash
-    docker-compose up --build
-    ```
-
-    This command will build the Docker image for the application and start the container. The API will be available at `http://localhost:3000`.
-
-2.  **Send a test request:**
-
-    You can use a tool like `curl` to send a `POST` request to the `/transfer` endpoint.
-
-    ```bash
-    curl -X POST \
-      http://localhost:3000/api-payments/transfer \
-      -H 'Content-Type: application/json' \
-      -d '{ "amount": 100, "txhash": "0x123..." }'
-    ```
-
-3.  **Expected Response:**
-
-    If the request is successful, you should receive a `201 Created` response with the transfer data in the response body:
-
-    ```json
-    {
-        "meta": {
-            "trace_id": "a2c1a7b7-918a-423e-8483-3f2839f48133"
-        },
-        "code": "OK",
-        "message": "Transfer created successfully",
-        "data": {
-            "status": "CONFIRMED",
-            "transactionId": "0xabc-vendor-a",
-            "provider": "BlockchainVendorA",
-            "rawData": {
-                "transactionStatus": "CONFIRMED",
-                "destinationTransactionHash": "0xabc-vendor-a"
-            }
-        }
-    }
-    ```
-
-### Cleanup
-
-To stop and remove the containers, run the following command:
-
-```bash
-docker-compose down
+```
+.
+├── .github/                # CI/CD workflows and PR templates
+├── domain/                 # Core business logic (independent of frameworks)
+├── infrastructure/         # Infrastructure as Code (Terraform)
+├── src/                    # NestJS application layer (infrastructure and adapters)
+│   ├── adapter/
+│   │   ├── in/http/        # Inbound adapters (REST API controllers)
+│   │   └── out/            # Outbound adapters (database, external APIs)
+│   ├── common/             # Shared utilities, filters, and interceptors
+│   └── ...
+├── Dockerfile
+└── README.md
 ```
 
-## Support
+---
 
-For questions or support, please open an issue in the GitHub repository.
+## CI/CD Pipelines
+
+The project uses two distinct GitHub Actions workflows to separate infrastructure management from application deployment.
+
+### 1. Infrastructure Pipeline (`infrastructure.yml`)
+
+-   **Purpose**: Manages the lifecycle of the core cloud infrastructure (VPC, GKE Cluster, etc.).
+-   **Trigger**: Manual execution (`workflow_dispatch`).
+-   **Details**: This workflow should be run once to provision an environment and only re-run when infrastructure changes are needed.
+
+### 2. Application CI/CD Pipeline (`ci-cd.yml`)
+
+-   **Purpose**: Builds, tests, and deploys the application to an existing GKE cluster.
+-   **Triggers**:
+    -   Push to `main` or `feature/*` branches.
+    -   Pull request to `main`.
+-   **Flow**:
+    1.  **CI**: Runs linting and unit tests.
+    2.  **Build & Push**: Builds a new Docker image and pushes it to Google Artifact Registry.
+    3.  **Deploy**: Connects to the GKE cluster and updates the running application to use the new Docker image.
+    4.  **Manual Approval**: Deployments to the `production` environment require manual approval from a designated reviewer in GitHub.
+
+### CI/CD Configuration and Secrets
+
+For the pipelines to run, you must configure secrets in your GitHub repository. For detailed instructions, see the **CI/CD Configuration** section in the [Architecture Document](./ARCHITECTURE.md).
+
+---
+
+## Further Documentation
+
+-   [**Architecture Deep Dive**](./ARCHITECTURE.md): A detailed explanation of the hexagonal architecture, infrastructure design, CI/CD configuration.
+-   [**SOC 2 Alignment**](./SOC2.md): A description of how the infrastructure and processes align with SOC 2 principles.
