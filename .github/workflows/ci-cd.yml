@@ -12,6 +12,7 @@ on:
   delete:
     branches:
       - 'feature/**'
+  workflow_dispatch:
 
 jobs:
   ci:
@@ -86,7 +87,7 @@ jobs:
         working-directory: ./infrastructure
       - name: Terraform Workspace
         run: |
-          WORKSPACE_NAME=$(echo ${{ github.ref_name }} | sed 's/\//-/g')
+          WORKSPACE_NAME=$(echo ${{ github.ref_name }} | sed 's/\\\//-/g')
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
         working-directory: ./infrastructure
       - name: Terraform Apply
@@ -137,7 +138,7 @@ jobs:
         working-directory: ./infrastructure
       - name: Terraform Workspace
         run: |
-          WORKSPACE_NAME=$(echo ${{ github.event.ref }} | sed 's/\//-/g')
+          WORKSPACE_NAME=$(echo ${{ github.event.ref }} | sed 's/\\\//-/g')
           terraform workspace select $WORKSPACE_NAME
         working-directory: ./infrastructure
       - name: Terraform Destroy
@@ -147,7 +148,9 @@ jobs:
   deploy_prod:
     runs-on: ubuntu-latest
     needs: build_and_push_image
-    environment: production
+    environment:
+      name: production
+      url: ${{ steps.apply_prod.outputs.service_url }}
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: 'read'
@@ -191,4 +194,38 @@ jobs:
           sleep 30 # Wait for the service to be ready
           URL=$(terraform output -raw service_url)
           curl -f $URL/health
+        working-directory: ./infrastructure
+
+  cleanup_infrastructure:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: 'projects/94200964730/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-actions-deployer@kiratakehometest.iam.gserviceaccount.com'
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.0
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./infrastructure
+      - name: Destroy Production Environment
+        run: | 
+          terraform workspace select production && terraform destroy -auto-approve || echo "Production workspace not found or already destroyed."
+        working-directory: ./infrastructure
+      - name: Destroy Development Environments
+        run: |
+          terraform workspace list | grep -vE 'default|production' | sed 's/\*//g' | while read -r ws; do
+            echo "Destroying workspace: $ws"
+            terraform workspace select "$ws"
+            terraform destroy -auto-approve
+          done
         working-directory: ./infrastructure
