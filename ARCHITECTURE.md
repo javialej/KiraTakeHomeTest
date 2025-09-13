@@ -110,18 +110,3 @@ The `txhash` is a critical piece of information that allows for the verification
     *   Verifying that the "to" address is the correct company wallet.
     *   Ensuring that the transaction amount and token type (e.g., USDC) are correct.
 6.  **Update Transaction Status:** Based on the verification results, the worker would update the transaction status in the database to "verified" or "failed".
- any of the core business logic. This makes the system highly modular, scalable, and easy to maintain.
-
-## Transaction Hash (txhash) Verification Flow
-
-The `txhash` is a critical piece of information that allows for the verification of a transaction on the blockchain. The verification flow is as follows:
-
-1.  **Receive the `txhash`:** The client sends a `POST` request to the `/transfer` endpoint with the `txhash` in the request body.
-2.  **Vendor Interaction:** The application interacts with the specified vendor's API to initiate the off-ramp process.
-3.  **Asynchronous Verification:** In a production scenario, a separate, asynchronous process would be triggered to verify the `txhash`. This could be a message queue (e.g., Google Pub/Sub) that a worker service subscribes to.
-4.  **Blockchain Interaction:** The worker service would then use a blockchain explorer API (e.g., Etherscan for Ethereum) or a direct connection to a blockchain node to query the transaction details using the `txhash`.
-5.  **Verification Checks:** The worker would perform several checks, such as:
-    *   Confirming that the transaction was successful.
-    *   Verifying that the "to" address is the correct company wallet.
-    *   Ensuring that the transaction amount and token type (e.g., USDC) are correct.
-6.  **Update Transaction Status:** Based on the verification results, the worker would update the transaction status in the database to "verified" or "failed".
