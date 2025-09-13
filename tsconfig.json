@@ -28,7 +28,7 @@
   "include": [
     "src/**/*.ts",
     "domain/**/*.ts",
-    "__mocks__/**/*.ts",
-    "schematics/**/*.ts"
-  ]
+    "__mocks__/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist", "schematics"]
 }
