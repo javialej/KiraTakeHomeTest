@@ -3,6 +3,7 @@ import {ApiPaymentsController} from './api-payments.controller';
 import {HandlerGetFeature} from 'src/handler/get-feature.handler';
 import {HTTPResponse} from 'src/model/dto/http-response.model';
 import {GetFeatureRequest} from 'src/model/dto/feature.type';
+import {PostCreateTransferHandler} from '../../../handler/post-create-transfer.handler';
 
 describe('ApiPaymentsController', () => {
   let controller: ApiPaymentsController;
@@ -14,6 +15,12 @@ describe('ApiPaymentsController', () => {
       providers: [
         {
           provide: HandlerGetFeature,
+          useValue: {
+            execute: jest.fn().mockResolvedValue({} as HTTPResponse),
+          },
+        },
+        {
+          provide: PostCreateTransferHandler,
           useValue: {
             execute: jest.fn().mockResolvedValue({} as HTTPResponse),
           },
