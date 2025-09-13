@@ -1,7 +1,9 @@
-
-import { PostCreateTransferMapper } from './post-create-transfer.mapper';
-import { CreateTransferDto } from '../../adapter/in/http/dto/create-transfer.dto';
-import { VendorRequest, VendorResponse } from '../../../domain/src/interface/vendors.interface';
+import {PostCreateTransferMapper} from './post-create-transfer.mapper';
+import {CreateTransferDto} from '../../adapter/in/http/dto/create-transfer.dto';
+import {
+  VendorRequest,
+  VendorResponse,
+} from '../../../domain/src/interface/vendors.interface';
 
 describe('PostCreateTransferMapper', () => {
   it('should map from DTO to model', () => {

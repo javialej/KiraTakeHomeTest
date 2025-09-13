@@ -1,16 +1,15 @@
-
 export interface VendorRequest {
   amount: number;
   vendor: string;
   txhash: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface VendorResponse {
   status: string;
   transactionId: string;
   provider: string;
-  rawData: any;
+  rawData: unknown;
 }
 
 export interface IVendors {

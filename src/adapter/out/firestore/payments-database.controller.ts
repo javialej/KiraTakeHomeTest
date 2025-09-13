@@ -3,6 +3,7 @@ import {firestoreClient} from './client.connection';
 import {IPaymentsRepository} from '../../../../domain/src/interface/payments.repository';
 import {ConfigService} from '@nestjs/config';
 import {Injectable} from '@nestjs/common';
+import {PaymentsEntity} from '../../../../domain/src/model/payments.entity';
 
 @Injectable()
 export class PaymentsDataBaseRepository implements IPaymentsRepository {
@@ -15,4 +16,10 @@ export class PaymentsDataBaseRepository implements IPaymentsRepository {
     }
     this.collection = firestoreClient.collection(collectionName);
   }
+
+  async save(payment: PaymentsEntity): Promise<PaymentsEntity> {
+    await this.collection.doc(payment.PK).set({...payment});
+    return payment;
+  }
 }
+

@@ -8,7 +8,7 @@ export class PostCreateTransferPipe
 {
   transform(
     dto: CreateTransferDto,
-    {metatype}: ArgumentMetadata,
+    {metatype}: ArgumentMetadata
   ): CreateTransferDto {
     if (!metatype) {
       return dto;

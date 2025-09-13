@@ -9,12 +9,12 @@ import {PostCreateTransferPipe} from './post-create-transfer.pipe';
 @Controller('api-payments')
 export class ApiPaymentsController {
   constructor(
-    private readonly postCreateTransferHandler: PostCreateTransferHandler,
+    private readonly postCreateTransferHandler: PostCreateTransferHandler
   ) {}
 
   @Post('transfer')
   async postCreateTransfer(
-    @Body(new PostCreateTransferPipe()) createTransferDto: CreateTransferDto,
+    @Body(new PostCreateTransferPipe()) createTransferDto: CreateTransferDto
   ): Promise<HTTPResponse> {
     return this.postCreateTransferHandler.execute(createTransferDto);
   }

@@ -1,11 +1,13 @@
-
-import { Test, TestingModule } from '@nestjs/testing';
-import { BlockchainVendorAController } from './blockchainVendorA.controller';
-import { CustomException } from '../../../../model/exceptions/custom.model';
-import { of, throwError } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { VendorRequest, VendorResponse } from '../../../../../domain/src/interface/vendors.interface';
-import { AxiosError } from 'axios';
+import {Test, TestingModule} from '@nestjs/testing';
+import {BlockchainVendorAController} from './blockchainVendorA.controller';
+import {CustomException} from '../../../../model/exceptions/custom.model';
+import {of, throwError} from 'rxjs';
+import {HttpService} from '@nestjs/axios';
+import {
+  VendorRequest,
+  VendorResponse,
+} from '../../../../../domain/src/interface/vendors.interface';
+import {AxiosError} from 'axios';
 
 describe('BlockchainVendorAController', () => {
   let controller: BlockchainVendorAController;
@@ -24,7 +26,9 @@ describe('BlockchainVendorAController', () => {
       ],
     }).compile();
 
-    controller = module.get<BlockchainVendorAController>(BlockchainVendorAController);
+    controller = module.get<BlockchainVendorAController>(
+      BlockchainVendorAController
+    );
     httpService = module.get<HttpService>('httpService');
   });
 
@@ -33,16 +37,23 @@ describe('BlockchainVendorAController', () => {
   });
 
   it('should throw a CustomException if the API call fails', async () => {
-    const request: VendorRequest = { amount: 100, txhash: '0x123' };
-    jest.spyOn(httpService, 'post').mockReturnValueOnce(throwError(() => new AxiosError('API Error')));
+    const request: VendorRequest = {amount: 100, txhash: '0x123'};
+    jest
+      .spyOn(httpService, 'post')
+      .mockReturnValueOnce(throwError(() => new AxiosError('API Error')));
 
-    await expect(controller.requestToVendors(request)).rejects.toBeInstanceOf(CustomException);
+    await expect(controller.requestToVendors(request)).rejects.toBeInstanceOf(
+      CustomException
+    );
   });
 
   it('should return a mapped VendorResponse on successful API call', async () => {
-    const request: VendorRequest = { amount: 100, txhash: '0x123' };
+    const request: VendorRequest = {amount: 100, txhash: '0x123'};
     const vendorApiResponse = {
-      data: { transactionStatus: 'CONFIRMED', destinationTransactionHash: '0xabc' },
+      data: {
+        transactionStatus: 'CONFIRMED',
+        destinationTransactionHash: '0xabc',
+      },
     };
     jest.spyOn(httpService, 'post').mockReturnValueOnce(of(vendorApiResponse));
 
@@ -63,7 +74,7 @@ describe('BlockchainVendorAController', () => {
         targetAsset: 'COP',
         network: 'POLYGON',
       },
-      { headers: { 'X-Api-Key': 'your-vendor-a-api-key' } },
+      {headers: {'X-Api-Key': 'your-vendor-a-api-key'}}
     );
   });
 });

@@ -1,6 +1,5 @@
-
-import { PaymentsEntity } from './payments.entity';
-import { DatabaseGenericFields } from './database-generic-fields.type';
+import {PaymentsEntity} from './payments.entity';
+import {DatabaseGenericFields} from './database-generic-fields.type';
 
 describe('PaymentsEntity', () => {
   it('should create a payments entity', () => {

@@ -1,13 +1,13 @@
 import sdk from './instrumentation'; // Must import the OpenTelemetry SDK as first line of the main file
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import {ValidationPipe} from '@nestjs/common';
+import {NestFactory} from '@nestjs/core';
+import {AppModule} from './app.module';
 import * as rTracer from 'cls-rtracer';
-import { ConfigService } from '@nestjs/config';
-import { ExceptionManager } from './common/exceptions/exceptions-manager.filter';
-import { RestInterceptor } from './common/interceptors/rest.interceptor';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { LoggerService } from './common/logger/logger.service';
+import {ConfigService} from '@nestjs/config';
+import {ExceptionManager} from './common/exceptions/exceptions-manager.filter';
+import {RestInterceptor} from './common/interceptors/rest.interceptor';
+import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
+import {LoggerService} from './common/logger/logger.service';
 
 async function bootstrap() {
   // Must start the OpenTelemetry SDK before creating the NestJS application
@@ -23,7 +23,7 @@ async function bootstrap() {
       whitelist: true,
       forbidUnknownValues: true,
       skipNullProperties: true,
-    }),
+    })
   );
 
   //Configuración libreria para generación de indentificador de solicitud

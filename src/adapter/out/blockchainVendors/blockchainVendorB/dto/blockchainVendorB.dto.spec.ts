@@ -1,15 +1,14 @@
-
-import { VendorBRequestDto, VendorBResponseDto } from './blockchainVendorB.dto';
+import {VendorBRequestDto, VendorBResponseDto} from './blockchainVendorB.dto';
 
 describe('BlockchainVendorB DTOs', () => {
   it('should create a request DTO', () => {
     const dto = new VendorBRequestDto();
-    (dto as any).paymentId = '0x456';
-    (dto as any).destination = {
+    dto.paymentId = '0x456';
+    dto.destination = {
       name: 'test',
       account: '123',
     };
-    (dto as any).details = {
+    dto.details = {
       amount: 200,
       currency: 'COP',
     };
@@ -27,10 +26,13 @@ describe('BlockchainVendorB DTOs', () => {
 
   it('should create a response DTO', () => {
     const dto = new VendorBResponseDto();
-    (dto as any).id = '0xdef';
-    (dto as any).executionStatus = 'FINALIZED';
+    dto.id = '0xdef';
+    dto.executionStatus = 'FINALIZED';
 
     expect(dto.id).toEqual('0xdef');
     expect(dto.executionStatus).toEqual('FINALIZED');
   });
 });
+
+
+

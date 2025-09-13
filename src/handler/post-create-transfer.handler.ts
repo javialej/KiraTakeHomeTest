@@ -6,14 +6,14 @@ import {getTracer} from '../common/utils/general.util';
 import {CreateTransferDto} from '../adapter/in/http/dto/create-transfer.dto';
 import {PostCreateTransferUseCase} from '../../domain/src/usecase/post-create-transfer.usecase';
 import {PostCreateTransferMapper} from '../model/mapper/post-create-transfer.mapper';
-import { MetricsService } from '../common/metrics/metrics.service';
+import {MetricsService} from '../common/metrics/metrics.service';
 
 @Injectable()
 export class PostCreateTransferHandler {
   constructor(
     @Inject('PostCreateTransferUseCase')
     private readonly postCreateTransferUC: PostCreateTransferUseCase,
-    private readonly metricsService: MetricsService,
+    private readonly metricsService: MetricsService
   ) {}
 
   async execute(request: CreateTransferDto): Promise<HTTPResponse> {
@@ -24,7 +24,7 @@ export class PostCreateTransferHandler {
     try {
       const response = await getTracer().startActiveSpan(
         'PostCreateTransferUseCase.apply',
-        { attributes: { 'transfer.txhash': request.txhash } },
+        {attributes: {'transfer.txhash': request.txhash}},
         async (span: Span): Promise<HTTPResponse> => {
           try {
             const command = PostCreateTransferMapper.toModel(request);
@@ -35,7 +35,7 @@ export class PostCreateTransferHandler {
               HttpStatus.CREATED,
               SUCCESS_STATES_MESSAGES.Success.code,
               'Transfer created successfully',
-              dto,
+              dto
             );
           } catch (error) {
             status = 'failure';
@@ -43,7 +43,7 @@ export class PostCreateTransferHandler {
           } finally {
             span.end();
           }
-        },
+        }
       );
       return response;
     } finally {

@@ -1,39 +1,24 @@
+import {PaymentsDataBaseRepository} from './adapter/out/firestore/payments-database.controller';
+import {Module} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {HttpModule, HttpService} from '@nestjs/axios';
+import {ApiPaymentsController} from './adapter/in/http/api-payments.controller';
+import {BlockchainVendorAController} from './adapter/out/blockchainVendors/blockchainVendorA/blockchainVendorA.controller';
+import {BlockchainVendorBController} from './adapter/out/blockchainVendors/blockchainVendorB/blockchainVendorB.controller';
+import {PostCreateTransferUseCase} from '../domain/src/usecase/post-create-transfer.usecase';
+import {PostCreateTransferHandler} from './handler/post-create-transfer.handler';
+import {BlockchainVendorsController} from './adapter/out/blockchainVendors/blockchainVendors.controller';
+import {IVendors} from 'domain/src/interface/vendors.interface';
+import {ILogger} from 'domain/src/interface/logger.interface';
+import {CommonsModule} from './common.module';
+import {LoggerService} from './common/logger/logger.service';
 
-import { PaymentsDataBaseRepository } from './adapter/out/firestore/payments-database.controller';
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { IHealthRepository } from 'domain/src/interface/health.repository';
-import { GetHealthUseCase } from 'domain/src/usecase/get-health.usecase';
-import { ApiPaymentsController } from './adapter/in/http/api-payments.controller';
-import { HealthController } from './adapter/in/http/health.controller';
-import { TypeOrmHealthRepository } from './adapter/out/postgres/typeorm-health.repository';
-import { HandlerGetServerHealthStatus } from './handler/get-server-health-status.handler';
-import { BlockchainVendorAController } from './adapter/out/blockchainVendors/blockchainVendorA/blockchainVendorA.controller';
-import { BlockchainVendorBController } from './adapter/out/blockchainVendors/blockchainVendorB/blockchainVendorB.controller';
-import { PostCreateTransferUseCase } from '../domain/src/usecase/post-create-transfer.usecase';
-import { PostCreateTransferHandler } from './handler/post-create-transfer.handler';
-import { BlockchainVendorsController } from './adapter/out/blockchainVendors/blockchainVendors.controller';
-import { IVendors } from 'domain/src/interface/vendors.interface';
-import { ILogger } from 'domain/src/interface/logger.interface';
-import { CommonsModule } from './common.module';
-import { LoggerService } from './common/logger/logger.service';
+import {HealthController} from './adapter/in/http/health.controller';
 
 @Module({
   imports: [HttpModule, CommonsModule],
-  controllers: [HealthController, ApiPaymentsController],
+  controllers: [ApiPaymentsController, HealthController],
   providers: [
-    {
-      provide: 'TypeOrmHealthRepository',
-      useClass: TypeOrmHealthRepository,
-    },
-    {
-      provide: 'GetHealthUseCase',
-      useFactory: (healthRepository: IHealthRepository) => {
-        return new GetHealthUseCase(healthRepository);
-      },
-      inject: ['TypeOrmHealthRepository'],
-    },
     {
       provide: 'PaymentsDataBaseRepository',
       useFactory: (configService: ConfigService) => {
@@ -71,7 +56,6 @@ import { LoggerService } from './common/logger/logger.service';
       inject: [HttpService],
     },
     BlockchainVendorsController, // Ensure the main controller is provided
-    HandlerGetServerHealthStatus,
     PostCreateTransferHandler,
   ],
 })

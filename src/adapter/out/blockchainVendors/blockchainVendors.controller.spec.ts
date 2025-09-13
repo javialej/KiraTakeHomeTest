@@ -1,10 +1,9 @@
-
-import { Test, TestingModule } from '@nestjs/testing';
-import { BlockchainVendorsController } from './blockchainVendors.controller';
-import { BlockchainVendorAController } from './blockchainVendorA/blockchainVendorA.controller';
-import { BlockchainVendorBController } from './blockchainVendorB/blockchainVendorB.controller';
-import { VendorRequest } from '../../../../domain/src/interface/vendors.interface';
-import { NotFoundException } from '@nestjs/common';
+import {Test, TestingModule} from '@nestjs/testing';
+import {BlockchainVendorsController} from './blockchainVendors.controller';
+import {BlockchainVendorAController} from './blockchainVendorA/blockchainVendorA.controller';
+import {BlockchainVendorBController} from './blockchainVendorB/blockchainVendorB.controller';
+import {VendorRequest} from '../../../../domain/src/interface/vendors.interface';
+import {NotFoundException} from '@nestjs/common';
 
 describe('BlockchainVendorsController', () => {
   let controller: BlockchainVendorsController;
@@ -30,27 +29,33 @@ describe('BlockchainVendorsController', () => {
       ],
     }).compile();
 
-    controller = module.get<BlockchainVendorsController>(BlockchainVendorsController);
-    vendorA = module.get<BlockchainVendorAController>('BlockchainVendorAController');
-    vendorB = module.get<BlockchainVendorBController>('BlockchainVendorBController');
+    controller = module.get<BlockchainVendorsController>(
+      BlockchainVendorsController
+    );
+    vendorA = module.get<BlockchainVendorAController>(
+      'BlockchainVendorAController'
+    );
+    vendorB = module.get<BlockchainVendorBController>(
+      'BlockchainVendorBController'
+    );
   });
 
   it('should route to Vendor A if amount is less than or equal to 100', async () => {
-    const request: VendorRequest = { amount: 100, txhash: '0x123' };
+    const request: VendorRequest = {amount: 100, txhash: '0x123'};
     await controller.requestToVendors(request);
     expect(vendorA.requestToVendors).toHaveBeenCalledWith(request);
     expect(vendorB.requestToVendors).not.toHaveBeenCalled();
   });
 
   it('should route to Vendor B if amount is greater than 100', async () => {
-    const request: VendorRequest = { amount: 101, txhash: '0x456' };
+    const request: VendorRequest = {amount: 101, txhash: '0x456'};
     await controller.requestToVendors(request);
     expect(vendorB.requestToVendors).toHaveBeenCalledWith(request);
     expect(vendorA.requestToVendors).not.toHaveBeenCalled();
   });
 
   it('should use Vendor B as the default catch-all', async () => {
-    const request: VendorRequest = { amount: 500, txhash: '0x789' };
+    const request: VendorRequest = {amount: 500, txhash: '0x789'};
     await controller.requestToVendors(request);
     expect(vendorB.requestToVendors).toHaveBeenCalledWith(request);
     expect(vendorA.requestToVendors).not.toHaveBeenCalled();
@@ -61,7 +66,49 @@ describe('BlockchainVendorsController', () => {
     // To test this, we would need to remove the catch-all strategy.
     // For now, we can simulate an empty strategies array.
     (controller as any).strategies = [];
-    const request: VendorRequest = { amount: 100, txhash: '0x123' };
-    await expect(controller.requestToVendors(request)).rejects.toThrow(NotFoundException);
+    const request: VendorRequest = {amount: 100, txhash: '0x123'};
+    await expect(controller.requestToVendors(request)).rejects.toThrow(
+      NotFoundException
+    );
+  });
+
+  it('should route to Vendor A if vendor is specified as BlockchainVendorA', async () => {
+    const request: VendorRequest = {
+      amount: 200,
+      txhash: '0x123',
+      vendor: 'BlockchainVendorA',
+    };
+    await controller.requestToVendors(request);
+    expect(vendorA.requestToVendors).toHaveBeenCalledWith(request);
+    expect(vendorB.requestToVendors).not.toHaveBeenCalled();
+  });
+
+  it('should route to Vendor B if vendor is specified as BlockchainVendorB', async () => {
+    const request: VendorRequest = {
+      amount: 50,
+      txhash: '0x456',
+      vendor: 'BlockchainVendorB',
+    };
+    await controller.requestToVendors(request);
+    expect(vendorB.requestToVendors).toHaveBeenCalledWith(request);
+    expect(vendorA.requestToVendors).not.toHaveBeenCalled();
+  });
+
+  it('should throw a NotFoundException if a non-existent vendor is specified', async () => {
+    const request: VendorRequest = {
+      amount: 100,
+      txhash: '0x123',
+      vendor: 'NonExistentVendor',
+    };
+    await expect(controller.requestToVendors(request)).rejects.toThrow(
+      NotFoundException
+    );
+  });
+
+  it('should fallback to amount-based routing if vendor is not specified', async () => {
+    const request: VendorRequest = {amount: 100, txhash: '0x123'};
+    await controller.requestToVendors(request);
+    expect(vendorA.requestToVendors).toHaveBeenCalledWith(request);
+    expect(vendorB.requestToVendors).not.toHaveBeenCalled();
   });
 });

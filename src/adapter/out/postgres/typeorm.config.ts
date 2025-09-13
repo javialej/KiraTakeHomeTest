@@ -2,8 +2,18 @@ import {PostgresConnectionOptions} from 'typeorm/driver/postgres/PostgresConnect
 import * as dotenv from 'dotenv';
 import {AuthMechanism} from '../../../model/enum/auth-mechanism.enum';
 import {isLocal} from '../../../common/utils/environment.util';
+import {DataSourceOptions} from 'typeorm';
 
-export const typeOrmConfig = (): PostgresConnectionOptions => {
+export const typeOrmConfig = (): DataSourceOptions => {
+  if (process.env.NODE_ENV === 'test') {
+    return {
+      type: 'sqlite',
+      database: ':memory:',
+      entities: [],
+      synchronize: true,
+    };
+  }
+
   dotenv.config({quiet: true});
   const {
     DB_HOST,

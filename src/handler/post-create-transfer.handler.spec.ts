@@ -1,12 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PostCreateTransferHandler } from './post-create-transfer.handler';
-import { PostCreateTransferUseCase } from '../../domain/src/usecase/post-create-transfer.usecase';
-import { PostCreateTransferMapper } from '../model/mapper/post-create-transfer.mapper';
-import { HTTPResponse } from '../model/dto/http-response.model';
-import { SUCCESS_STATES_MESSAGES } from '../common/response-states/success-states.messages';
-import { HttpStatus } from '@nestjs/common';
-import { CreateTransferDto } from '../adapter/in/http/dto/create-transfer.dto';
-import { MetricsService } from '../common/metrics/metrics.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {PostCreateTransferHandler} from './post-create-transfer.handler';
+import {PostCreateTransferUseCase} from '../../domain/src/usecase/post-create-transfer.usecase';
+import {PostCreateTransferMapper} from '../model/mapper/post-create-transfer.mapper';
+import {HTTPResponse} from '../model/dto/http-response.model';
+import {SUCCESS_STATES_MESSAGES} from '../common/response-states/success-states.messages';
+import {HttpStatus} from '@nestjs/common';
+import {CreateTransferDto} from '../adapter/in/http/dto/create-transfer.dto';
+import {MetricsService} from '../common/metrics/metrics.service';
+import {VendorResponse} from '../../domain/src/interface/vendors.interface';
 
 describe('PostCreateTransferHandler', () => {
   let handler: PostCreateTransferHandler;
@@ -35,7 +36,9 @@ describe('PostCreateTransferHandler', () => {
     }).compile();
 
     handler = module.get<PostCreateTransferHandler>(PostCreateTransferHandler);
-    useCase = module.get<PostCreateTransferUseCase>('PostCreateTransferUseCase');
+    useCase = module.get<PostCreateTransferUseCase>(
+      'PostCreateTransferUseCase'
+    );
     metricsService = module.get<MetricsService>(MetricsService);
   });
 
@@ -47,15 +50,20 @@ describe('PostCreateTransferHandler', () => {
     const request: CreateTransferDto = {
       amount: 100,
       txhash: '0x123',
+      vendor: 'BlockchainVendorA',
     };
-    const useCaseResponse = {
+    const useCaseResponse: VendorResponse = {
       provider: 'BlockchainVendorA',
-      ...request,
+      status: 'CONFIRMED',
+      transactionId: '0xabc',
+      rawData: {},
     };
 
     jest.spyOn(PostCreateTransferMapper, 'toModel').mockReturnValue(request);
     jest.spyOn(useCase, 'apply').mockResolvedValue(useCaseResponse);
-    jest.spyOn(PostCreateTransferMapper, 'toDTO').mockReturnValue(useCaseResponse);
+    jest
+      .spyOn(PostCreateTransferMapper, 'toDTO')
+      .mockReturnValue(useCaseResponse as unknown as CreateTransferDto);
 
     const result = await handler.execute(request);
 
@@ -64,11 +72,17 @@ describe('PostCreateTransferHandler', () => {
         HttpStatus.CREATED,
         SUCCESS_STATES_MESSAGES.Success.code,
         'Transfer created successfully',
-        useCaseResponse,
-      ),
+        useCaseResponse
+      )
     );
-    expect(metricsService.incrementTransfersTotal).toHaveBeenCalledWith('BlockchainVendorA', 'success');
-    expect(metricsService.recordTransferAmount).toHaveBeenCalledWith(100, 'BlockchainVendorA');
+    expect(metricsService.incrementTransfersTotal).toHaveBeenCalledWith(
+      'BlockchainVendorA',
+      'success'
+    );
+    expect(metricsService.recordTransferAmount).toHaveBeenCalledWith(
+      100,
+      'BlockchainVendorA'
+    );
     expect(metricsService.recordTransferLatency).toHaveBeenCalled();
   });
 
@@ -76,6 +90,7 @@ describe('PostCreateTransferHandler', () => {
     const request: CreateTransferDto = {
       amount: 100,
       txhash: '0x123',
+      vendor: 'BlockchainVendorA',
     };
 
     jest.spyOn(PostCreateTransferMapper, 'toModel').mockReturnValue(request);
@@ -83,8 +98,14 @@ describe('PostCreateTransferHandler', () => {
 
     await expect(handler.execute(request)).rejects.toThrow('Test Error');
 
-    expect(metricsService.incrementTransfersTotal).toHaveBeenCalledWith('unknown', 'failure');
-    expect(metricsService.recordTransferAmount).toHaveBeenCalledWith(100, 'unknown');
+    expect(metricsService.incrementTransfersTotal).toHaveBeenCalledWith(
+      'unknown',
+      'failure'
+    );
+    expect(metricsService.recordTransferAmount).toHaveBeenCalledWith(
+      100,
+      'unknown'
+    );
     expect(metricsService.recordTransferLatency).toHaveBeenCalled();
   });
 });

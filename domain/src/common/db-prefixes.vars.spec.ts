@@ -1,5 +1,4 @@
-
-import { DOMAIN_PREFIX, USER_PREFIX } from './db-prefixes.vars';
+import {DOMAIN_PREFIX, USER_PREFIX} from './db-prefixes.vars';
 
 describe('DB Prefixes', () => {
   it('should have the correct prefixes', () => {

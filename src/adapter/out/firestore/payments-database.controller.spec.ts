@@ -1,8 +1,6 @@
-
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaymentsDataBaseRepository } from './payments-database.controller';
-import { firestoreClient } from './client.connection';
-import { ConfigService } from '@nestjs/config';
+import {Test, TestingModule} from '@nestjs/testing';
+import {PaymentsDataBaseRepository} from './payments-database.controller';
+import {ConfigService} from '@nestjs/config';
 
 jest.mock('./client.connection', () => ({
   firestoreClient: {
@@ -28,7 +26,9 @@ describe('PaymentsDataBaseRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PaymentsDataBaseRepository>(PaymentsDataBaseRepository);
+    repository = module.get<PaymentsDataBaseRepository>(
+      PaymentsDataBaseRepository
+    );
   });
 
   it('should be defined', () => {

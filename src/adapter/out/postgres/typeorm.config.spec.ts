@@ -4,8 +4,16 @@ import {typeOrmConfig} from './typeorm.config';
 import {AuthMechanism} from '../../../model/enum/auth-mechanism.enum';
 
 describe('typeOrmConfig', () => {
+  const OLD_ENV = process.env;
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetModules();
+    process.env = {...OLD_ENV};
+    delete process.env.NODE_ENV;
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV;
   });
 
   const setDBEnvironmentVariables = () => {
@@ -42,13 +50,22 @@ describe('typeOrmConfig', () => {
 });
 
 describe('getPassword', () => {
+  const OLD_ENV = process.env;
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetModules();
+    process.env = {...OLD_ENV};
+    delete process.env.NODE_ENV;
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV;
   });
 
   it('should return config with DB_PASSWORD when environment is local', async () => {
     process.env.APP_ENV = Environment.LOCAL;
     process.env.DB_PASSWORD = 'local-password';
+    process.env.DB_AUTH_MECHANISM = AuthMechanism.PASSWORD;
 
     const config = typeOrmConfig();
     const password = await (config as any).password();
@@ -59,6 +76,7 @@ describe('getPassword', () => {
   it('should return config with DB_PASSWORD when auth mechanism is PASSWORD', async () => {
     process.env.APP_ENV = Environment.LOCAL;
     process.env.DB_PASSWORD = 'password-auth';
+    process.env.DB_AUTH_MECHANISM = AuthMechanism.PASSWORD;
 
     const config = typeOrmConfig();
     const password = await (config as any).password();

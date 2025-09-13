@@ -1,17 +1,17 @@
-
-import { Test, TestingModule } from '@nestjs/testing';
-import { MetricsService } from './metrics.service';
-import { getMeter } from '@opentelemetry/api';
+import {Test, TestingModule} from '@nestjs/testing';
+import {MetricsService} from './metrics.service';
 
 jest.mock('@opentelemetry/api', () => ({
-  getMeter: jest.fn(() => ({
-    createCounter: jest.fn(() => ({
-      add: jest.fn(),
+  metrics: {
+    getMeter: jest.fn(() => ({
+      createCounter: jest.fn(() => ({
+        add: jest.fn(),
+      })),
+      createHistogram: jest.fn(() => ({
+        record: jest.fn(),
+      })),
     })),
-    createHistogram: jest.fn(() => ({
-      record: jest.fn(),
-    })),
-  })),
+  },
 }));
 
 describe('MetricsService', () => {
@@ -32,15 +32,18 @@ describe('MetricsService', () => {
   it('should call the meter methods', () => {
     const spyAdd = jest.spyOn((service as any).transfersTotal, 'add');
     const spyRecord = jest.spyOn((service as any).transferAmount, 'record');
-    const spyRecordLatency = jest.spyOn((service as any).transferLatency, 'record');
+    const spyRecordLatency = jest.spyOn(
+      (service as any).transferLatency,
+      'record'
+    );
 
     service.incrementTransfersTotal('test', 'success');
-    expect(spyAdd).toHaveBeenCalledWith(1, { vendor: 'test', status: 'success' });
+    expect(spyAdd).toHaveBeenCalledWith(1, {vendor: 'test', status: 'success'});
 
     service.recordTransferAmount(100, 'test');
-    expect(spyRecord).toHaveBeenCalledWith(100, { vendor: 'test' });
+    expect(spyRecord).toHaveBeenCalledWith(100, {vendor: 'test'});
 
     service.recordTransferLatency(100, 'test');
-    expect(spyRecordLatency).toHaveBeenCalledWith(100, { vendor: 'test' });
+    expect(spyRecordLatency).toHaveBeenCalledWith(100, {vendor: 'test'});
   });
 });

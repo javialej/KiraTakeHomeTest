@@ -1,11 +1,14 @@
-
-import { IVendors, VendorRequest, VendorResponse } from '../interface/vendors.interface';
-import { ILogger } from '../interface/logger.interface';
+import {
+  IVendors,
+  VendorRequest,
+  VendorResponse,
+} from '../interface/vendors.interface';
+import {ILogger} from '../interface/logger.interface';
 
 class PostCreateTransferUseCase {
   constructor(
     private readonly vendors: IVendors,
-    private readonly logger: ILogger,
+    private readonly logger: ILogger
   ) {
     this.logger.log('PostCreateTransferUseCase initialized');
   }
@@ -19,7 +22,9 @@ class PostCreateTransferUseCase {
     // Delegate the vendor selection and API call to the smart router.
     const vendorResponse = await this.vendors.requestToVendors(request);
 
-    this.logger.log(`Successfully processed transfer with vendor: ${vendorResponse.provider}`);
+    this.logger.log(
+      `Successfully processed transfer with vendor: ${vendorResponse.provider}`
+    );
 
     // After the vendor call, this would update the transfer record
     // with the vendor's response (e.g., status, transactionId).
@@ -28,4 +33,4 @@ class PostCreateTransferUseCase {
   }
 }
 
-export { PostCreateTransferUseCase };
+export {PostCreateTransferUseCase};

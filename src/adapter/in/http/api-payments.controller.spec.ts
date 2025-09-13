@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ApiPaymentsController } from './api-payments.controller';
-import { HTTPResponse } from 'src/model/dto/http-response.model';
-import { PostCreateTransferHandler } from '../../../handler/post-create-transfer.handler';
-import { CreateTransferDto } from './dto/create-transfer.dto';
+import {Test, TestingModule} from '@nestjs/testing';
+import {ApiPaymentsController} from './api-payments.controller';
+import {HTTPResponse} from 'src/model/dto/http-response.model';
+import {PostCreateTransferHandler} from '../../../handler/post-create-transfer.handler';
+import {CreateTransferDto} from './dto/create-transfer.dto';
 
 describe('ApiPaymentsController', () => {
   let controller: ApiPaymentsController;

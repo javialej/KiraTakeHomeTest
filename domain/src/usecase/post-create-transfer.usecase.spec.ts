@@ -1,6 +1,10 @@
-import { PostCreateTransferUseCase } from './post-create-transfer.usecase';
-import { IVendors, VendorRequest, VendorResponse } from '../interface/vendors.interface';
-import { ILogger } from '../interface/logger.interface';
+import {PostCreateTransferUseCase} from './post-create-transfer.usecase';
+import {
+  IVendors,
+  VendorRequest,
+  VendorResponse,
+} from '../interface/vendors.interface';
+import {ILogger} from '../interface/logger.interface';
 
 describe('PostCreateTransferUseCase', () => {
   let useCase: PostCreateTransferUseCase;
@@ -24,6 +28,7 @@ describe('PostCreateTransferUseCase', () => {
     const request: VendorRequest = {
       amount: 100,
       txhash: '0x123',
+      vendor: 'BlockchainVendorA',
     };
     const expectedResponse: VendorResponse = {
       status: 'CONFIRMED',
@@ -38,6 +43,8 @@ describe('PostCreateTransferUseCase', () => {
 
     expect(vendors.requestToVendors).toHaveBeenCalledWith(request);
     expect(result).toEqual(expectedResponse);
-    expect(logger.log).toHaveBeenCalledWith('PostCreateTransferUseCase initialized');
+    expect(logger.log).toHaveBeenCalledWith(
+      'PostCreateTransferUseCase initialized'
+    );
   });
 });

@@ -1,11 +1,14 @@
-
-import { Inject, Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom } from 'rxjs';
-import { AxiosError } from 'axios';
-import { CustomException } from '../../../../model/exceptions/custom.model';
-import { ERROR_STATES_MESSAGES } from '../../../../common/response-states/error-states.messages';
-import { IVendors, VendorRequest, VendorResponse } from '../../../../../domain/src/interface/vendors.interface';
+import {Inject, Injectable} from '@nestjs/common';
+import {HttpService} from '@nestjs/axios';
+import {catchError, firstValueFrom} from 'rxjs';
+import {AxiosError} from 'axios';
+import {CustomException} from '../../../../model/exceptions/custom.model';
+import {ERROR_STATES_MESSAGES} from '../../../../common/response-states/error-states.messages';
+import {
+  IVendors,
+  VendorRequest,
+  VendorResponse,
+} from '../../../../../domain/src/interface/vendors.interface';
 
 // DTOs specific to Vendor B
 class VendorBRequestDto {
@@ -24,13 +27,15 @@ class VendorBResponseDto {
 @Injectable()
 export class BlockchainVendorBController implements IVendors {
   constructor(
-    @Inject('httpService') private readonly httpService: HttpService,
+    @Inject('httpService') private readonly httpService: HttpService
   ) {}
 
-  public async requestToVendors(request: VendorRequest): Promise<VendorResponse> {
+  public async requestToVendors(
+    request: VendorRequest
+  ): Promise<VendorResponse> {
     const url = 'https://api.vendorb.io/v3/offramp/initiate'; // Example endpoint
     const headers = {
-      'Authorization': `Bearer your-vendor-b-secret-token`, // Example header
+      Authorization: `Bearer your-vendor-b-secret-token`, // Example header
     };
 
     // Map domain request to vendor-specific DTO
@@ -44,15 +49,17 @@ export class BlockchainVendorBController implements IVendors {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.post<VendorBResponseDto>(url, vendorRequest, { headers }).pipe(
-          catchError((error: AxiosError) => {
-            throw new CustomException(
-              error as Error,
-              'Technical',
-              ERROR_STATES_MESSAGES.BusinessException,
-            );
-          }),
-        ),
+        this.httpService
+          .post<VendorBResponseDto>(url, vendorRequest, {headers})
+          .pipe(
+            catchError((error: AxiosError) => {
+              throw new CustomException(
+                error as Error,
+                'Technical',
+                ERROR_STATES_MESSAGES.BusinessException
+              );
+            })
+          )
       );
 
       // Map vendor-specific response back to domain response
@@ -66,7 +73,7 @@ export class BlockchainVendorBController implements IVendors {
       throw new CustomException(
         error as Error,
         'Technical',
-        ERROR_STATES_MESSAGES.BusinessException,
+        ERROR_STATES_MESSAGES.BusinessException
       );
     }
   }

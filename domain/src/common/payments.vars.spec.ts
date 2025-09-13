@@ -1,5 +1,4 @@
-
-import { ENTITY_DONT_HAVE_RECORDS } from './payments.vars';
+import {ENTITY_DONT_HAVE_RECORDS} from './payments.vars';
 
 describe('Payments Vars', () => {
   it('should have the correct error messages', () => {

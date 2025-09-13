@@ -15,10 +15,33 @@ This repository contains the infrastructure for a cross-border payments API, des
 
 The platform's hexagonal architecture ensures that new vendors can be added with minimal effort. The primary focus of this project is the infrastructure, observability, automation, and SOC 2 alignment, providing a solid foundation for a secure and scalable payments service.
 
+## Table of Contents
+
+- [Payments API Module - Kira Take-Home Test: Platform Engineer](#payments-api-module---kira-take-home-test-platform-engineer)
+  - [Description](#description)
+  - [Table of Contents](#table-of-contents)
+  - [Documentation](#documentation)
+  - [Hexagonal Architecture](#hexagonal-architecture)
+  - [Code Coverage](#code-coverage)
+  - [Installation](#installation)
+  - [Running the App](#running-the-app)
+  - [Testing](#testing)
+  - [Local Testing with Docker](#local-testing-with-docker)
+    - [Prerequisites](#prerequisites)
+    - [Running the Application Locally](#running-the-application-locally)
+    - [Cleanup](#cleanup)
+  - [Support](#support)
+
 ## Documentation
 
 -   [**Architecture**](./ARCHITECTURE.md): An in-depth explanation of the hexagonal architecture, infrastructure design, vendor extensibility, and transaction verification flow.
 -   [**SOC 2 Alignment**](./SOC2.md): A description of how the infrastructure and processes align with SOC 2 principles.
+
+## Hexagonal Architecture
+
+This project is built using a hexagonal architecture (also known as ports and adapters). This architectural style isolates the application's core logic from external concerns, such as databases, APIs, and frameworks. This separation of concerns makes the application easier to test, maintain, and evolve.
+
+For a more detailed explanation of the hexagonal architecture and how it is implemented in this project, please see the [**Architecture**](./ARCHITECTURE.md) document.
 
 ## Code Coverage
 
@@ -74,7 +97,7 @@ The platform's hexagonal architecture ensures that new vendors can be added with
 -   `npm run test:cov`: Runs all unit tests and generates a code coverage report.
 -   `npm run test:watch`: Runs tests in watch mode, re-running them whenever a file is changed.
 
-## Local Testing
+## Local Testing with Docker
 
 This project includes a Docker Compose setup that allows you to run and test the application locally without needing to install any dependencies other than Docker.
 
@@ -136,6 +159,4 @@ docker-compose down
 
 ## Support
 
-Whole software is owned and licensed only.
-
-It can grow thanks to the development team and support.
+For questions or support, please open an issue in the GitHub repository.
