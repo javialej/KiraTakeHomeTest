@@ -74,7 +74,7 @@ To add a new vendor, a developer simply needs to follow these steps:
 
 1.  **Create a New Vendor Directory:** Inside `src/adapter/out/vendors`, create a new directory for the new vendor (e.g., `src/adapter/out/vendors/new-vendor`).
 
-2.  **Implement the Vendor Controller:** Create a new controller class (e.g., `new-vendor.controller.ts`) that contains the logic for making the external API call. This controller will be responsible for handling the specifics of the vendor's API, such as the endpoint URL, authentication, and request/response formats.
+2.  **Implement the Vendor Controller:** Create a new controller class (e.g., `new-vendors.controller.ts`) that contains the logic for making the external API call. This controller will be responsible for handling the specifics of the vendor's API, such as the endpoint URL, authentication, and request/response formats.
 
 3.  **Define DTOs:** Create Data Transfer Objects (DTOs) to define the request and response data structures for the new vendor. This ensures type safety and a clear contract for the data being exchanged.
 

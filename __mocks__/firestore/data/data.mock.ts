@@ -1,4 +1,4 @@
-import {DomainEntity} from '../../../domain/src/model/domain.entity';
+import {DomainEntity} from '../../../domain/src/model/payments.entity';
 
 export const entitiesMock: DomainEntity[] = [
   {

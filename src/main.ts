@@ -40,17 +40,6 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('MS Feature')
     .setDescription('The MS Feature API description')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'Cognito JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'Cognito-Auth'
-    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);

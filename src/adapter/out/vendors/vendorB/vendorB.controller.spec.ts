@@ -1,7 +1,10 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {VendorBController, VendorBRequestDto} from './vendorB.controller';
-import {CustomException} from '../../../../model/exceptions/custom.model';
-import {of, throwError} from 'rxjs';
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { VendorBController } from './vendorB.controller';
+import { CustomException } from '../../../../model/exceptions/custom.model';
+import { of, throwError } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { VendorRequest, VendorResponse } from '../../../../../domain/src/interface/vendors.interface';
 
 describe('VendorBController', () => {
   let controller: VendorBController;
@@ -29,36 +32,42 @@ describe('VendorBController', () => {
   });
 
   it('should throw a CustomException if the API call fails', async () => {
-    const request: VendorBRequestDto = {
-      paymentId: '456',
-      destination: {name: 'test', account: '123'},
-      details: {amount: 200, currency: 'COP'},
-    };
-    httpServiceMock.post.mockReturnValueOnce(
-      throwError(() => new Error('API Error'))
-    );
+    const request: VendorRequest = { amount: 200, vendor: 'VendorB', txhash: '0x456' };
+    httpServiceMock.post.mockReturnValueOnce(throwError(() => new Error('API Error')));
 
-    await expect(controller.executeTransfer(request)).rejects.toBeInstanceOf(
-      CustomException
-    );
+    await expect(controller.requestToVendors(request)).rejects.toBeInstanceOf(CustomException);
   });
 
-  it('should return data on successful API call', async () => {
-    const request: VendorBRequestDto = {
-      paymentId: '456',
-      destination: {name: 'test', account: '123'},
-      details: {amount: 200, currency: 'COP'},
-    };
-    const response = {data: {id: 'xyz', executionStatus: 'completed'}};
-    httpServiceMock.post.mockReturnValueOnce(of(response));
+  it('should return a mapped VendorResponse on successful API call', async () => {
+    const request: VendorRequest = { amount: 200, vendor: 'VendorB', txhash: '0x456' };
+    const vendorApiResponse = { data: { id: 'xyz-789', executionStatus: 'success' } };
+    httpServiceMock.post.mockReturnValueOnce(of(vendorApiResponse));
 
-    const result = await controller.executeTransfer(request);
+    const result: VendorResponse = await controller.requestToVendors(request);
 
-    expect(result).toEqual(response.data);
+    // Verify the mapping to the domain response
+    expect(result).toEqual({
+      status: 'success',
+      transactionId: 'xyz-789',
+      provider: 'VendorB',
+      rawData: vendorApiResponse.data,
+    });
+
+    // Verify the mapping from the domain request to the vendor-specific request
     expect(httpServiceMock.post).toHaveBeenCalledWith(
       'https://api.vendorb.io/v2/payments',
-      request,
-      {headers: {Authorization: 'Bearer your-vendor-b-secret-token'}}
+      {
+        paymentId: '0x456',
+        destination: {
+          name: 'User Name',
+          account: '1234567890',
+        },
+        details: {
+          amount: 200,
+          currency: 'COP',
+        },
+      },
+      { headers: { 'Authorization': 'Bearer your-vendor-b-secret-token' } },
     );
   });
 });

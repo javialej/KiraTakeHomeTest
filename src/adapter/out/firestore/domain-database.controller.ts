@@ -1,7 +1,7 @@
 import {CollectionReference} from '@google-cloud/firestore';
 import {firestoreClient} from './client.connection';
-import {DomainEntity} from '../../../../domain/src/model/domain.entity';
-import {IDomainDataBaseRepository} from '../../../../domain/src/interface/domain-database.repository';
+import {DomainEntity} from '../../../../domain/src/model/payments.entity';
+import {IDomainDataBaseRepository} from '../../../../domain/src/interface/payments-database.repository';
 import {UtilsDomainDatabase} from './utils';
 
 export class DomainDataBaseRepository implements IDomainDataBaseRepository {

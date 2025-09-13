@@ -1,22 +1,24 @@
-import {DomainDataBaseRepository} from './adapter/out/firestore/domain-database.controller';
-import {UtilsDomainDatabase} from './adapter/out/firestore/utils';
-import {Module} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
-import {HttpModule, HttpService} from '@nestjs/axios';
-import {IHealthRepository} from 'domain/src/interface/health.repository';
-import {GetHealthUseCase} from 'domain/src/usecase/get-health.usecase';
-import {ApiPaymentsController} from './adapter/in/http/api-payments.controller';
-import {HealthController} from './adapter/in/http/health.controller';
-import {TypeOrmHealthRepository} from './adapter/out/postgres/typeorm-health.repository';
-import {HandlerGetServerHealthStatus} from './handler/get-server-health-status.handler';
-import {SlackNotification} from './adapter/out/slack/notification.controller';
-import {BackOfficeNotification} from './adapter/out/backoffice/notification.controller';
-import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notification.repository';
-import {VendorAController} from './adapter/out/vendors/vendorA/vendorA.controller';
-import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controller';
 
-import {PostCreateTransferUseCase} from '../domain/src/usecase/post-create-transfer.usecase';
-import {PostCreateTransferHandler} from './handler/post-create-transfer.handler';
+import { DomainDataBaseRepository } from './adapter/out/firestore/domain-database.controller';
+import { UtilsDomainDatabase } from './adapter/out/firestore/utils';
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { IHealthRepository } from 'domain/src/interface/health.repository';
+import { GetHealthUseCase } from 'domain/src/usecase/get-health.usecase';
+import { ApiPaymentsController } from './adapter/in/http/api-payments.controller';
+import { HealthController } from './adapter/in/http/health.controller';
+import { TypeOrmHealthRepository } from './adapter/out/postgres/typeorm-health.repository';
+import { HandlerGetServerHealthStatus } from './handler/get-server-health-status.handler';
+import { SlackNotification } from './adapter/out/slack/notification.controller';
+import { BackOfficeNotification } from './adapter/out/backoffice/notification.controller';
+import { IBackOfficeNotification } from 'domain/src/interface/backoffice-notification.repository';
+import { VendorAController } from './adapter/out/vendors/vendorA/vendorA.controller';
+import { VendorBController } from './adapter/out/vendors/vendorB/vendorB.controller';
+import { PostCreateTransferUseCase } from '../domain/src/usecase/post-create-transfer.usecase';
+import { PostCreateTransferHandler } from './handler/post-create-transfer.handler';
+import { VendorsController } from './adapter/out/vendors/vendors.controller';
+import { IVendors } from 'domain/src/interface/vendors.interface';
 
 @Module({
   imports: [HttpModule],
@@ -65,11 +67,15 @@ import {PostCreateTransferHandler} from './handler/post-create-transfer.handler'
       inject: ['SlackNotification', ConfigService],
     },
     {
+      provide: 'IVendors',
+      useClass: VendorsController,
+    },
+    {
       provide: 'PostCreateTransferUseCase',
-      useFactory: () => {
-        return new PostCreateTransferUseCase();
+      useFactory: (vendors: IVendors) => {
+        return new PostCreateTransferUseCase(vendors);
       },
-      inject: [],
+      inject: ['IVendors'],
     },
     {
       provide: 'VendorAController',
@@ -85,6 +91,7 @@ import {PostCreateTransferHandler} from './handler/post-create-transfer.handler'
       },
       inject: [HttpService],
     },
+    VendorsController, // Ensure the main controller is provided
     HandlerGetServerHealthStatus,
     PostCreateTransferHandler,
   ],

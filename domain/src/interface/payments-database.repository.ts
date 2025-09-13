@@ -1,4 +1,4 @@
-import {DomainEntity} from '../model/domain.entity';
+import {DomainEntity} from '../model/payments.entity';
 
 export interface IDomainDataBaseRepository {
   /**
