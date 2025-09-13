@@ -1,6 +1,6 @@
 import {DatabaseGenericFields} from './database-generic-fields.type';
 
-class DomainEntity {
+class PaymentsEntity {
   public createdAt: string;
   public email: string;
   public name: string;
@@ -18,4 +18,4 @@ class DomainEntity {
   }
 }
 
-export {DomainEntity};
+export {PaymentsEntity};

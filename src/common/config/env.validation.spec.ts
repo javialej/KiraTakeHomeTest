@@ -23,7 +23,6 @@ describe('EnvironmentVariables', () => {
         AWS_DYNAMODB_TABLE_DOMAIN: 'dummy',
         AWS_COGNITO_USER_POOL_ID: 'dummy',
         SERVICE_NAME: 'dummy',
-        SLACK_WEBHOOK: 'dummy',
       };
 
       it('should be success', () => {

@@ -21,7 +21,7 @@ The primary goals of this architecture are:
 ### Key Strengths:
 
 *   **Excellent Separation of Concerns:** The project strictly adheres to the principles of hexagonal architecture, ensuring that the core business logic in the `domain` is completely decoupled from external technologies and frameworks. This makes the application highly adaptable and easy to test.
-*   **Well-Organized Adapters:** The `src/adapter` directory is a textbook example of how to structure inbound and outbound adapters. The `in` and `out` subdirectories, further organized by protocol (`http`) and external service (`firestore`, `postgres`, `slack`), make the code easy to navigate and understand.
+*   **Well-Organized Adapters:** The `src/adapter` directory is a textbook example of how to structure inbound and outbound adapters. The `in` and `out` subdirectories, further organized by protocol (`http`) and external service (`firestore`, `postgres`), make the code easy to navigate and understand.
 *   **Scalable Vendor Integration:** The pattern established for integrating with external vendors is robust and scalable. It provides a clear blueprint for adding new integrations while maintaining a consistent and organized codebase.
 
 ## Infrastructure Design

@@ -21,7 +21,7 @@ export class ExceptionManager implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    this.logger.error(exception);
+    this.logger.error(exception.message);
 
     const result: HTTPResponse = new HTTPResponse(
       HttpStatus.INTERNAL_SERVER_ERROR,

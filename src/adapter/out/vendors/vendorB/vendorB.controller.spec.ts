@@ -35,7 +35,7 @@ describe('VendorBController', () => {
     const request: VendorRequest = { amount: 200, vendor: 'VendorB', txhash: '0x456' };
     httpServiceMock.post.mockReturnValueOnce(throwError(() => new Error('API Error')));
 
-    await expect(controller.requestToVendors(request)).rejects.toBeInstanceOf(CustomException);
+    await expect(controller.requestToVendor(request)).rejects.toBeInstanceOf(CustomException);
   });
 
   it('should return a mapped VendorResponse on successful API call', async () => {
@@ -43,7 +43,7 @@ describe('VendorBController', () => {
     const vendorApiResponse = { data: { id: 'xyz-789', executionStatus: 'success' } };
     httpServiceMock.post.mockReturnValueOnce(of(vendorApiResponse));
 
-    const result: VendorResponse = await controller.requestToVendors(request);
+    const result: VendorResponse = await controller.requestToVendor(request);
 
     // Verify the mapping to the domain response
     expect(result).toEqual({

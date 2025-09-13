@@ -42,9 +42,6 @@ class EnvironmentVariables {
 
   @IsString()
   SERVICE_NAME!: string;
-
-  @IsString()
-  SLACK_WEBHOOK!: string;
 }
 
 export function validate(config: Record<string, unknown>) {

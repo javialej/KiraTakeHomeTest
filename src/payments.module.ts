@@ -1,5 +1,5 @@
 
-import { DomainDataBaseRepository } from './adapter/out/firestore/domain-database.controller';
+import { PaymentsDataBaseRepository } from './adapter/out/firestore/payments-database.controller';
 import { UtilsDomainDatabase } from './adapter/out/firestore/utils';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -10,15 +10,14 @@ import { ApiPaymentsController } from './adapter/in/http/api-payments.controller
 import { HealthController } from './adapter/in/http/health.controller';
 import { TypeOrmHealthRepository } from './adapter/out/postgres/typeorm-health.repository';
 import { HandlerGetServerHealthStatus } from './handler/get-server-health-status.handler';
-import { SlackNotification } from './adapter/out/slack/notification.controller';
-import { BackOfficeNotification } from './adapter/out/backoffice/notification.controller';
-import { IBackOfficeNotification } from 'domain/src/interface/backoffice-notification.repository';
 import { VendorAController } from './adapter/out/vendors/vendorA/vendorA.controller';
 import { VendorBController } from './adapter/out/vendors/vendorB/vendorB.controller';
 import { PostCreateTransferUseCase } from '../domain/src/usecase/post-create-transfer.usecase';
 import { PostCreateTransferHandler } from './handler/post-create-transfer.handler';
 import { VendorsController } from './adapter/out/vendors/vendors.controller';
 import { IVendors } from 'domain/src/interface/vendors.interface';
+import { ILogger } from 'domain/src/interface/logger.interface';
+import { NestjsLoggerAdapter } from './adapter/out/logger/nestjs-logger.adapter';
 
 @Module({
   imports: [HttpModule],
@@ -43,39 +42,26 @@ import { IVendors } from 'domain/src/interface/vendors.interface';
       inject: [ConfigService],
     },
     {
-      provide: 'DomainDataBaseRepository',
+      provide: 'PaymentsDataBaseRepository',
       useFactory: (utilsDomainDatabase: UtilsDomainDatabase) => {
-        return new DomainDataBaseRepository(utilsDomainDatabase);
+        return new PaymentsDataBaseRepository(utilsDomainDatabase);
       },
       inject: ['UtilsDomainDatabase'],
-    },
-    {
-      provide: 'SlackNotification',
-      useFactory: (httpService: HttpService) => {
-        return new SlackNotification(httpService);
-      },
-      inject: [HttpService],
-    },
-    {
-      provide: 'BackOfficeNotification',
-      useFactory: (
-        slackNotification: SlackNotification,
-        configService: ConfigService,
-      ) => {
-        return new BackOfficeNotification(slackNotification, configService);
-      },
-      inject: ['SlackNotification', ConfigService],
     },
     {
       provide: 'IVendors',
       useClass: VendorsController,
     },
     {
+      provide: 'ILogger',
+      useClass: NestjsLoggerAdapter,
+    },
+    {
       provide: 'PostCreateTransferUseCase',
-      useFactory: (vendors: IVendors) => {
-        return new PostCreateTransferUseCase(vendors);
+      useFactory: (vendors: IVendors, logger: ILogger) => {
+        return new PostCreateTransferUseCase(vendors, logger);
       },
-      inject: ['IVendors'],
+      inject: ['IVendors', 'ILogger'],
     },
     {
       provide: 'VendorAController',
