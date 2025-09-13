@@ -20,3 +20,9 @@ variable "cluster_name" {
   type        = string
   default     = "kira-take-home-test"
 }
+
+variable "image_tag" {
+  description = "The default tag for the Docker image."
+  type        = string
+  default     = "latest"
+}
