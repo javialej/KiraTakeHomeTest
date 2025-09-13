@@ -49,6 +49,7 @@ export const typeOrmConfig = (): PostgresConnectionOptions => {
 
 const getPassword = async (auth: AuthMechanism): Promise<string> => {
   if (auth === AuthMechanism.PASSWORD) return process.env.DB_PASSWORD!;
+  throw new Error(`Unsupported authentication mechanism: ${auth}`);
 };
 
 const getSsl = () => {
