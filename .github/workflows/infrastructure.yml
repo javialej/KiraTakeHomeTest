@@ -2,11 +2,20 @@ name: 'Infrastructure CI/CD'
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+        - development
+        - production
 
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -26,6 +35,11 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        working-directory: ./infrastructure
+
+      - name: Select or Create Terraform Workspace
+        id: workspace
+        run: terraform workspace select ${{ github.event.inputs.environment }} || terraform workspace new ${{ github.event.inputs.environment }}
         working-directory: ./infrastructure
 
       - name: Terraform Plan
