@@ -255,17 +255,44 @@ To streamline the process of adding a new payment vendor, this project includes 
 
 **Usage:**
 
-1.  **Run the Schematic**: From the root of the project, run the following `nest generate` (or `nest g`) command, passing the new vendor's name in PascalCase (e.g., `VendorC`).
+1.  **Run the Schematic**: From the root of the project, run the `nest generate` command, passing the new vendor's name in PascalCase (e.g., `VendorC`).
 
     ```bash
     nest generate vendor VendorC
     ```
+    This creates a new directory at `src/adapter/out/blockchainVendors/vendor-c` with boilerplate files.
 
-2.  **Implement the Logic**: The generator will create a new directory at `src/adapter/out/blockchainVendors/vendor-c` with boilerplate files. You will need to:
-    *   Implement the actual transfer logic in the new controller file.
-    *   Add routing logic for the new vendor in `src/adapter/out/blockchainVendors/blockchainVendors.controller.ts`.
+2.  **Implement the Logic**: Open the newly created controller file and implement the vendor-specific transfer logic.
 
-3.  **Commit and Push**: Once you have implemented the logic, commit the new files and push them. The CI/CD pipeline will automatically deploy the updated application with the new vendor.
+3.  **Add the Routing Logic**: Open `src/adapter/out/blockchainVendors/blockchainVendors.controller.ts` and add the new vendor to the routing logic. For example, to make `VendorC` selectable by name, you would add it to the `switch` statement:
+
+    ```typescript
+    // src/adapter/out/blockchainVendors/blockchainVendors.controller.ts
+
+    // ... inside the BlockchainVendorsController class ...
+    private getVendor(
+      amount: number,
+      vendor?: keyof typeof BlockchainVendors,
+    ): IVendors {
+      if (vendor) {
+        switch (vendor) {
+          case BlockchainVendors.BlockchainVendorA:
+            return this.vendorA;
+          case BlockchainVendors.BlockchainVendorB:
+            return this.vendorB;
+          // Add your new vendor here
+          case BlockchainVendors.BlockchainVendorC: // <-- Add this line
+            return this.vendorC;                   // <-- And this line
+          default:
+            throw new NotFoundException('Vendor not found');
+        }
+      }
+      // ... rest of the amount-based routing logic
+    }
+    ```
+    *(Remember to also inject the new `BlockchainVendorCController` in the constructor of `BlockchainVendorsController`)*
+
+4.  **Commit and Push**: Once you have implemented and tested the logic, commit the new files and push them. The CI/CD pipeline will automatically deploy the updated application with the new vendor.
 
 ---
 
