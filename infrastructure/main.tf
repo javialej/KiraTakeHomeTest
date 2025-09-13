@@ -37,3 +37,7 @@ module "artifact-registry" {
   gcp_region     = var.gcp_region
   project_name   = var.project_name
 }
+
+resource "google_compute_global_address" "static_ip" {
+  name = "kira-take-home-test-static-ip"
+}

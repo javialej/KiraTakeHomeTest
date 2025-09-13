@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: kira-take-home-test-certificate
+spec:
+  domains:
+    - api.example.com # Replace with your actual domain
