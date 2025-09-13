@@ -99,19 +99,25 @@ For a more detailed explanation of the hexagonal architecture and how it is impl
 
 ## CI/CD Configuration
 
-The CI/CD pipeline requires the configuration of two secret variables in your GitHub repository to securely connect to your Google Cloud Platform (GCP) project.
+The CI/CD pipeline is configured to use Google Cloud's Workload Identity Federation for secure authentication from GitHub Actions. This method avoids the need for long-lived service account keys, enhancing security.
 
-### Required Secrets
+### Required Permissions and Secrets
 
-1.  **`GCP_PROJECT_ID`**: The unique ID of your Google Cloud project.
-2.  **`GCP_SA_KEY`**: A JSON key for a Google Cloud Service Account with the necessary permissions to manage the resources defined in the Terraform files (e.g., Artifact Registry Administrator, Kubernetes Engine Admin).
+To enable the CI/CD pipeline, you need to configure your GCP project and GitHub repository as follows:
+
+1.  **Workload Identity Federation**: Set up a Workload Identity Pool and Provider in your GCP project to trust GitHub Actions.
+2.  **Service Account**: Create a GCP Service Account with the necessary permissions to manage the resources defined in the Terraform files (e.g., Artifact Registry Administrator, Kubernetes Engine Admin).
+3.  **GitHub Secrets**: Add the following secrets to your GitHub repository:
+    *   `GCP_PROJECT_ID`: The unique ID of your Google Cloud project.
+    *   `GCP_WORKLOAD_IDENTITY_PROVIDER`: The full resource name of the Workload Identity Provider (e.g., `projects/1234567890/locations/global/workloadIdentityPools/my-pool/providers/my-provider`).
+    *   `GCP_SERVICE_ACCOUNT`: The email address of the GCP Service Account.
 
 ### How to Add Secrets to GitHub
 
 1.  Go to your repository on GitHub.
 2.  Click on the **Settings** tab.
 3.  In the left sidebar, navigate to **Secrets and variables** > **Actions**.
-4.  Click the **New repository secret** button for each secret (`GCP_PROJECT_ID` and `GCP_SA_KEY`) and paste its value.
+4.  Click the **New repository secret** button for each secret and paste its value.
 
 ## CI/CD Pipeline Flow
 
