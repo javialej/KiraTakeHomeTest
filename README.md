@@ -225,7 +225,52 @@ For the pipelines to run, you must configure your GCP project and add the follow
 
 ---
 
+## Automated Triggers
+
+This project provides methods for external scripts or agents to perform key actions.
+
+### Triggering a Transfer Request
+
+An external agent can initiate a transfer by sending a `POST` request to the `/api-payments/transfer` endpoint.
+
+-   **URL**: `http://<your-service-url>/api-payments/transfer`
+-   **Method**: `POST`
+-   **Body**:
+    -   `amount` (number): The amount to transfer.
+    -   `txhash` (string): The transaction hash for verification.
+    -   `vendor` (string, optional): The specific vendor to use (e.g., `BlockchainVendorA`). If omitted, the system will route based on the amount.
+
+**Example using `curl`:**
+
+```bash
+curl -X POST \
+  http://localhost:3000/api-payments/transfer \
+  -H 'Content-Type: application/json' \
+  -d '{ "amount": 100, "txhash": "0x123abc...", "vendor": "BlockchainVendorA" }'
+```
+
+### Deploying a New Vendor Service
+
+To streamline the process of adding a new payment vendor, you can use the `add-vendor.sh` script. This script automatically scaffolds all the necessary files and updates the application module.
+
+**Usage:**
+
+1.  **Run the script** from the root of the project, passing the new vendor's name in PascalCase (e.g., `VendorC`).
+
+    ```bash
+    ./scripts/add-vendor.sh VendorC
+    ```
+
+2.  **Implement the Logic**: The script will create a new directory at `src/adapter/out/blockchainVendors/vendorc` with boilerplate files. You will need to:
+    *   Implement the actual transfer logic in the new controller file.
+    *   Add routing logic for the new vendor in `src/adapter/out/blockchainVendors/blockchainVendors.controller.ts`.
+
+3.  **Commit and Push**: Once you have implemented the logic, commit the new files and push them. The CI/CD pipeline will automatically deploy the updated application with the new vendor.
+
+---
+
 ## Further Documentation
+
 
 -   [**Architecture Deep Dive**](./ARCHITECTURE.md): A detailed explanation of the hexagonal architecture, infrastructure design, CI/CD configuration.
 -   [**SOC 2 Alignment**](./SOC2.md): A description of how the infrastructure and processes align with SOC 2 principles.
