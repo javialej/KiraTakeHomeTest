@@ -1,9 +1,9 @@
 import {Module} from '@nestjs/common';
 import {CommonsModule} from './common/common.module';
 import {ConfigModule} from './config.module';
-import {InstanceDomainModule} from './instance-domain.module';
+import {PaymentsModule} from './payments.module';
 
 @Module({
-  imports: [CommonsModule, ConfigModule, InstanceDomainModule],
+  imports: [CommonsModule, ConfigModule, PaymentsModule],
 })
 export class AppModule {}

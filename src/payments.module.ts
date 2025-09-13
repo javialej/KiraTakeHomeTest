@@ -94,4 +94,4 @@ import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controlle
     HandlerGetServerHealthStatus,
   ],
 })
-export class InstanceDomainModule {}
+export class PaymentsModule {}
