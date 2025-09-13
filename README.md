@@ -73,10 +73,10 @@ curl -X POST \
 ### Expected Response
 
 A successful request will return a `201 Created` status. The system uses amount-based routing:
--   Amounts **≤ 100** are routed to `BlockchainVendorA` and return a `CONFIRMED` status.
--   Amounts **> 100** are routed to `BlockchainVendorB` and return a `PENDING` status.
+-   No specify a Blockchain vendor it will be routed to `BlockchainVendorA` and return a `CONFIRMED` status.
+-   Specify a Blockchain vendor B it will be r to `BlockchainVendorB` and return a `PENDING` status.
 
-**Vendor A Response (`amount <= 100`):**
+**Vendor A Response:**
 ```json
 {
     "meta": { "trace_id": "..." },
@@ -95,7 +95,7 @@ A successful request will return a `201 Created` status. The system uses amount-
 ```
 ![Vendor A Response](./README-run-with-blockchainA.jpeg)
 
-**Vendor B Response (`amount > 100`):**
+**Vendor B Response:**
 ```json
 {
     "meta": { "trace_id": "..." },
