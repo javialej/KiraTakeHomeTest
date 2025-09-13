@@ -69,4 +69,3 @@ export class BlockchainVendorsController implements IVendors {
     return strategy.handler.requestToVendors(request);
   }
 }
-

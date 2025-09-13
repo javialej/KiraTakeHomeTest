@@ -18,8 +18,8 @@ export class PaymentsDataBaseRepository implements IPaymentsRepository {
   }
 
   async save(payment: PaymentsEntity): Promise<PaymentsEntity> {
-    await this.collection.doc(payment.PK).set({...payment});
+    const paymentObject = Object.assign({}, payment);
+    await this.collection.doc(payment.PK).set(paymentObject);
     return payment;
   }
 }
-

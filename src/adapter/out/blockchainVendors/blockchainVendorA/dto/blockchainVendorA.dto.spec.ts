@@ -21,7 +21,3 @@ describe('BlockchainVendorA DTOs', () => {
     expect(dto.confirmationId).toEqual('0xabc');
   });
 });
-
-
-
-

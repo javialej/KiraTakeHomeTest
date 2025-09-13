@@ -65,6 +65,7 @@ describe('BlockchainVendorsController', () => {
     // This case is theoretical in the current implementation, as Vendor B is a catch-all.
     // To test this, we would need to remove the catch-all strategy.
     // For now, we can simulate an empty strategies array.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     (controller as any).strategies = [];
     const request: VendorRequest = {amount: 100, txhash: '0x123'};
     await expect(controller.requestToVendors(request)).rejects.toThrow(

@@ -30,9 +30,12 @@ describe('MetricsService', () => {
   });
 
   it('should call the meter methods', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     const spyAdd = jest.spyOn((service as any).transfersTotal, 'add');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     const spyRecord = jest.spyOn((service as any).transferAmount, 'record');
     const spyRecordLatency = jest.spyOn(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       (service as any).transferLatency,
       'record'
     );

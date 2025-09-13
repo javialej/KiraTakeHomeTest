@@ -33,6 +33,3 @@ describe('BlockchainVendorB DTOs', () => {
     expect(dto.executionStatus).toEqual('FINALIZED');
   });
 });
-
-
-
