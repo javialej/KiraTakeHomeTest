@@ -9,7 +9,4 @@ output "cluster_endpoint" {
   value       = module.gke.cluster_endpoint
 }
 
-output "load_balancer_ip" {
-  description = "The external IP address of the load balancer."
-  value       = kubernetes_service.app_service.status[0].load_balancer[0].ingress[0].ip
-}
+
