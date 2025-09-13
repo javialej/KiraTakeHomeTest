@@ -97,6 +97,49 @@ For a more detailed explanation of the hexagonal architecture and how it is impl
 -   `npm run test:cov`: Runs all unit tests and generates a code coverage report.
 -   `npm run test:watch`: Runs tests in watch mode, re-running them whenever a file is changed.
 
+## CI/CD Configuration
+
+The CI/CD pipeline requires the configuration of two secret variables in your GitHub repository to securely connect to your Google Cloud Platform (GCP) project.
+
+### Required Secrets
+
+1.  **`GCP_PROJECT_ID`**: The unique ID of your Google Cloud project.
+2.  **`GCP_SA_KEY`**: A JSON key for a Google Cloud Service Account with the necessary permissions to manage the resources defined in the Terraform files (e.g., Artifact Registry Administrator, Kubernetes Engine Admin).
+
+### How to Add Secrets to GitHub
+
+1.  Go to your repository on GitHub.
+2.  Click on the **Settings** tab.
+3.  In the left sidebar, navigate to **Secrets and variables** > **Actions**.
+4.  Click the **New repository secret** button for each secret (`GCP_PROJECT_ID` and `GCP_SA_KEY`) and paste its value.
+
+## CI/CD Pipeline Flow
+
+The CI/CD pipeline is defined in the `.github/workflows/cd.yaml` file and is designed to provide a safe and efficient path to production, with automated testing and deployment for development environments.
+
+### Development Workflow (`feature/*` branches)
+
+This workflow is triggered whenever a developer pushes a commit to a branch prefixed with `feature/`.
+
+1.  **Build & Push Docker Image**: The `build` job is triggered, which builds a new Docker image of the application. The image is tagged with the commit SHA and pushed to Google Container Registry (GCR).
+2.  **Deploy to Development**: The `deploy_dev` job starts, creating a unique Terraform workspace for the feature branch (e.g., `feature-new-login`). This provisions a dedicated, isolated environment in GCP.
+3.  **Application Deployment**: The application is deployed to the new GKE cluster using the newly built Docker image.
+
+### Production Workflow (`main` branch)
+
+This workflow is triggered when a feature branch is merged into the `main` branch.
+
+1.  **Build & Push Docker Image**: The `build` job is triggered, creating a new production-ready Docker image.
+2.  **Manual Approval**: The `deploy_prod` job starts but immediately pauses, waiting for manual approval from a designated reviewer in the GitHub `production` environment.
+3.  **Deploy to Production**: Once approved, the job resumes. Terraform selects the `production` workspace and applies the configuration, updating the GKE deployment with the new image.
+
+### Cleanup Workflow (Branch Deletion)
+
+This workflow is triggered when a `feature/*` branch is deleted.
+
+1.  **Destroy Environment**: The `destroy_dev` job is triggered, selecting the Terraform workspace associated with the deleted branch.
+2.  **Resource Cleanup**: `terraform destroy` is executed, tearing down all cloud resources for that environment. This helps manage costs and keeps the cloud environment clean.
+
 ## Local Testing with Docker
 
 This project includes a Docker Compose setup that allows you to run and test the application locally without needing to install any dependencies other than Docker.
