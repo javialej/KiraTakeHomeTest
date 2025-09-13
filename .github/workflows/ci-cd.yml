@@ -1,4 +1,4 @@
-name: CI/CD
+name: Application CI/CD
 
 on:
   push:
@@ -8,10 +8,6 @@ on:
   pull_request:
     branches:
       - main
-      - 'feature/**'
-  delete:
-    branches:
-      - 'feature/**'
   workflow_dispatch:
 
 jobs:
@@ -29,9 +25,9 @@ jobs:
       - run: npm run lint
 
   build_and_push_image:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: ci
+    if: github.event_name == 'push'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -58,12 +54,10 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kira-take-home-test:${IMAGE_TAG}
           echo "::set-output name=image_tag::${IMAGE_TAG}"
 
-  deploy_dev:
+  deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_image
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
-    environment:
-      name: development
+    if: github.event_name == 'push'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -76,156 +70,12 @@ jobs:
         with:
           workload_identity_provider: 'projects/94200964730/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-actions-deployer@kiratakehometest.iam.gserviceaccount.com'
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
         with:
-          terraform_version: 1.2.0
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./infrastructure
-      - name: Terraform Workspace
+          cluster_name: kira-take-home-test-cluster
+          location: us-central1
+      - name: Deploy to GKE
         run: |
-          WORKSPACE_NAME=$(echo ${{ github.ref_name }} | sed 's/\\\//-/g')
-          terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
-        working-directory: ./infrastructure
-      - name: Terraform Apply
-        id: apply_dev
-        run: |
-          terraform apply -auto-approve \
-            -var="image_tag=${{ needs.build_and_push_image.outputs.image_tag }}" \
-            -var="db_host=${{ secrets.DB_HOST }}" \
-            -var="db_port=${{ secrets.DB_PORT }}" \
-            -var="db_username=${{ secrets.DB_USERNAME }}" \
-            -var="db_password=${{ secrets.DB_PASSWORD }}" \
-            -var="db_name=${{ secrets.DB_NAME }}" \
-            -var="service_name=${{ secrets.SERVICE_NAME }}" \
-            -var="collection_name=${{ secrets.COLLECTION_NAME }}"
-        working-directory: ./infrastructure
-      - name: Health Check
-        run: |
-          sleep 30 # Wait for the service to be ready
-          URL=$(terraform output -raw service_url)
-          curl -f $URL/health
-        working-directory: ./infrastructure
-
-  destroy_dev:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'delete' && startsWith(github.ref, 'refs/heads/feature/')
-    environment:
-      name: development
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: 'projects/94200964730/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-deployer@kiratakehometest.iam.gserviceaccount.com'
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.2.0
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./infrastructure
-      - name: Terraform Workspace
-        run: |
-          WORKSPACE_NAME=$(echo ${{ github.event.ref }} | sed 's/\\\//-/g')
-          terraform workspace select $WORKSPACE_NAME
-        working-directory: ./infrastructure
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
-        working-directory: ./infrastructure
-
-  deploy_prod:
-    runs-on: ubuntu-latest
-    needs: build_and_push_image
-    environment:
-      name: production
-      url: ${{ steps.apply_prod.outputs.service_url }}
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: 'projects/94200964730/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-deployer@kiratakehometest.iam.gserviceaccount.com'
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.2.0
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./infrastructure
-      - name: Terraform Workspace
-        run: terraform workspace select production || terraform workspace new production
-        working-directory: ./infrastructure
-      - name: Terraform Apply
-        id: apply_prod
-        run: |
-          terraform apply -auto-approve \
-            -var="image_tag=${{ needs.build_and_push_image.outputs.image_tag }}" \
-            -var="db_host=${{ secrets.DB_HOST }}" \
-            -var="db_port=${{ secrets.DB_PORT }}" \
-            -var="db_username=${{ secrets.DB_USERNAME }}" \
-            -var="db_password=${{ secrets.DB_PASSWORD }}" \
-            -var="db_name=${{ secrets.DB_NAME }}" \
-            -var="service_name=${{ secrets.SERVICE_NAME }}" \
-            -var="collection_name=${{ secrets.COLLECTION_NAME }}"
-        working-directory: ./infrastructure
-      - name: Health Check
-        run: |
-          sleep 30 # Wait for the service to be ready
-          URL=$(terraform output -raw service_url)
-          curl -f $URL/health
-        working-directory: ./infrastructure
-
-  cleanup_infrastructure:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: 'projects/94200964730/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-deployer@kiratakehometest.iam.gserviceaccount.com'
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.2.0
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./infrastructure
-      - name: Destroy Production Environment
-        run: | 
-          terraform workspace select production && terraform destroy -auto-approve || echo "Production workspace not found or already destroyed."
-        working-directory: ./infrastructure
-      - name: Destroy Development Environments
-        run: |
-          terraform workspace list | grep -vE 'default|production' | sed 's/\*//g' | while read -r ws; do
-            echo "Destroying workspace: $ws"
-            terraform workspace select "$ws"
-            terraform destroy -auto-approve
-          done
-        working-directory: ./infrastructure
+          kubectl apply -f k8s/
+          kubectl set image deployment/kira-take-home-test kira-take-home-test=gcr.io/${{ secrets.GCP_PROJECT_ID }}/kira-take-home-test:${{ needs.build_and_push_image.outputs.image_tag }}

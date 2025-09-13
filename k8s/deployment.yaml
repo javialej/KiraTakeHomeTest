@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kira-take-home-test
+  labels:
+    app: kira-take-home-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kira-take-home-test
+  template:
+    metadata:
+      labels:
+        app: kira-take-home-test
+    spec:
+      containers:
+      - name: kira-take-home-test
+        image: gcr.io/kiratakehometest/kira-take-home-test:latest # This will be updated by the CI/CD pipeline
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: app-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
