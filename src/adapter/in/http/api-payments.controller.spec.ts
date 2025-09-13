@@ -1,16 +1,16 @@
 import {Test, TestingModule} from '@nestjs/testing';
-import {ApiDomainController} from './api-domain.controller';
+import {ApiPaymentsController} from './api-payments.controller';
 import {HandlerGetFeature} from 'src/handler/get-feature.handler';
 import {HTTPResponse} from 'src/model/dto/http-response.model';
 import {GetFeatureRequest} from 'src/model/dto/feature.type';
 
-describe('ApiDomainController', () => {
-  let controller: ApiDomainController;
+describe('ApiPaymentsController', () => {
+  let controller: ApiPaymentsController;
   let handlerGetFeature: HandlerGetFeature;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ApiDomainController],
+      controllers: [ApiPaymentsController],
       providers: [
         {
           provide: HandlerGetFeature,
@@ -21,7 +21,7 @@ describe('ApiDomainController', () => {
       ],
     }).compile();
 
-    controller = module.get<ApiDomainController>(ApiDomainController);
+    controller = module.get<ApiPaymentsController>(ApiPaymentsController);
     handlerGetFeature = module.get<HandlerGetFeature>(HandlerGetFeature);
   });
 

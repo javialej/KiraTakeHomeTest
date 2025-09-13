@@ -6,7 +6,7 @@ import {HttpModule, HttpService} from '@nestjs/axios';
 import {IHealthRepository} from 'domain/src/interface/health.repository';
 import {GetHealthUseCase} from 'domain/src/usecase/get-health.usecase';
 import {GetFeatureUseCase} from '../domain/src/usecase/get-feature.usecase';
-import {ApiDomainController} from './adapter/in/http/api-domain.controller';
+import {ApiPaymentsController} from './adapter/in/http/api-payments.controller';
 import {HealthController} from './adapter/in/http/health.controller';
 import {TypeOrmHealthRepository} from './adapter/out/postgres/typeorm-health.repository';
 import {HandlerGetFeature} from './handler/get-feature.handler';
@@ -19,7 +19,7 @@ import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controlle
 
 @Module({
   imports: [HttpModule],
-  controllers: [HealthController, ApiDomainController],
+  controllers: [HealthController, ApiPaymentsController],
   providers: [
     {
       provide: 'TypeOrmHealthRepository',

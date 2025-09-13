@@ -7,9 +7,9 @@ import {GetFeaturePipe} from './get-feature.pipe';
 import {SUCCESS_STATES_MESSAGES} from '../../../common/response-states/success-states.messages';
 import {CreateTransferDto} from './dto/create-transfer.dto';
 
-@ApiTags('Api Domain')
-@Controller('api-domain')
-export class ApiDomainController {
+@ApiTags('Api Payments')
+@Controller('api-payments')
+export class ApiPaymentsController {
   constructor(private readonly handlerGetFeature: HandlerGetFeature) {}
 
   @Get('user/:email')
