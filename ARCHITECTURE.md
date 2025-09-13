@@ -48,21 +48,28 @@ The repository is organized to reflect the Hexagonal Architecture, with a clear 
 
 ```
 .
-├── .github/workflows/      # GitHub Actions CI/CD pipeline (ci-cd.yml)
-├── domain/                 # Core business logic, entities, and use cases.
-├── infrastructure/         # Infrastructure as Code (Terraform) for GCP resources.
-│   ├── modules/
-│   │   ├── gke/            # GKE Cluster module
-│   │   └── networking/     # VPC and networking module
-│   ├── main.tf             # Root Terraform configuration
-│   ├── k8s.tf              # Kubernetes deployment and service definitions
-│   └── ...
-├── src/                    # NestJS application code (the "infrastructure" layer of the hexagon)
+├── .github/                # CI/CD workflows and PR templates
+├── domain/                 # Core business logic (independent of frameworks)
+│   └── src/
+│       ├── common/         # Shared constants and variables
+│       ├── interface/      # Contracts for repositories and external services
+│       ├── model/          # Business entities and data types
+│       └── usecase/        # Application-specific business rules
+├── infrastructure/         # Infrastructure as Code (Terraform)
+├── src/                    # NestJS application layer (infrastructure and adapters)
+│   ├── app.module.ts       # Root application module
+│   ├── main.ts             # Application entry point
+│   ├── payments.module.ts  # Main module for the payments domain
 │   ├── adapter/
-│   │   ├── in/             # Inbound adapters (e.g., REST controllers)
-│   │   └── out/            # Outbound adapters (e.g., database clients, vendor APIs)
-│   └── ...
-├── Dockerfile              # Defines the application's container image.
+│   │   ├── in/http/        # Inbound adapters (REST API controllers)
+│   │   └── out/            # Outbound adapters (database, external APIs)
+│   │       ├── firestore/  # Firestore database adapter
+│   │       ├── postgres/   # TypeORM (Postgres) adapter
+│   │       └── vendors/    # Adapters for external payment vendors
+│   ├── common/             # Shared utilities, filters, and interceptors
+│   ├── handler/            # CQS handlers to orchestrate use cases
+│   └── model/              # DTOs, enums, and other data structures
+├── Dockerfile
 └── README.md
 ```
 
