@@ -1,6 +1,10 @@
 
 
 <p align="center">
+  <a href="https://github.com/javialej/KiraTakeHomeTest/actions/workflows/ci-cd.yml"><img src="https://github.com/javialej/KiraTakeHomeTest/actions/workflows/ci-cd.yml/badge.svg" alt="Application CI/CD"></a>
+</p>
+
+<p align="center">
   A production-ready, cross-border payments API built with NestJS, Hexagonal Architecture, and a secure, automated infrastructure on Google Cloud.
 </p>
 
