@@ -106,18 +106,30 @@ The CI/CD pipeline is configured to use Google Cloud's Workload Identity Federat
 To enable the CI/CD pipeline, you need to configure your GCP project and GitHub repository as follows:
 
 1.  **Workload Identity Federation**: Set up a Workload Identity Pool and Provider in your GCP project to trust GitHub Actions.
-2.  **Service Account**: Create a GCP Service Account with the necessary permissions to manage the resources defined in the Terraform files (e.g., Artifact Registry Administrator, Kubernetes Engine Admin).
-3.  **GitHub Secrets**: Add the following secrets to your GitHub repository:
+2.  **Service Account**: Create a GCP Service Account with the necessary permissions to manage the resources defined in the Terraform files (e.g., Artifact Registry Administrator, Kubernetes Engine Admin, Compute Network Admin).
+3.  **GitHub Secrets**: Add the following secrets to your GitHub repository. These are used to configure the application environment and connect to the database.
     *   `GCP_PROJECT_ID`: The unique ID of your Google Cloud project.
-    *   `GCP_WORKLOAD_IDENTITY_PROVIDER`: The full resource name of the Workload Identity Provider (e.g., `projects/1234567890/locations/global/workloadIdentityPools/my-pool/providers/my-provider`).
-    *   `GCP_SERVICE_ACCOUNT`: The email address of the GCP Service Account.
+    *   `DB_HOST`: The hostname or IP address of the database server.
+    *   `DB_PORT`: The port number of the database server.
+    *   `DB_USERNAME`: The username for the database connection.
+    *   `DB_PASSWORD`: The password for the database connection.
+    *   `DB_NAME`: The name of the database.
+    *   `SERVICE_NAME`: The name of the service.
+    *   `COLLECTION_NAME`: The name of the Firestore collection.
 
 ### How to Add Secrets to GitHub
 
-1.  Go to your repository on GitHub.
-2.  Click on the **Settings** tab.
-3.  In the left sidebar, navigate to **Secrets and variables** > **Actions**.
-4.  Click the **New repository secret** button for each secret and paste its value.
+1.  **Navigate to your GitHub Repository:**
+    Open your web browser and go to your repository page.
+
+2.  **Go to Settings:**
+    Click on the **Settings** tab, located in the main navigation bar of your repository.
+
+3.  **Access Actions Secrets:**
+    In the left sidebar, under the "Security" section, click on **Secrets and variables**, and then select **Actions**.
+
+4.  **Add Each Secret:**
+    Click the **New repository secret** button for each secret you need to add. Enter the secret's name in the "Name" field and its value in the "Secret" field, then click **Add secret**. Repeat this for all the required secrets listed above.
 
 ## CI/CD Pipeline Flow
 
