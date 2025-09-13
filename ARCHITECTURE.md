@@ -39,8 +39,29 @@ The infrastructure is designed for scalability, reliability, and maintainability
     -   **Infrastructure as Code (IaC):** Terraform
     -   **Containerization:** Docker
     -   **Container Orchestration:** Google Kubernetes Engine (GKE)
+    -   **Application Deployment:** Kubectl with Kustomize
+    -   **Networking:** GKE Ingress with Google Cloud Load Balancer
 -   **CI/CD:**
     -   **Automation:** GitHub Actions
+
+### CI/CD Pipelines
+
+To ensure a clear separation of concerns between infrastructure and application lifecycles, this project utilizes two distinct GitHub Actions workflows.
+
+1.  **Infrastructure Pipeline (`infrastructure.yml`):**
+    *   **Purpose:** Manages the core cloud infrastructure, including the VPC, GKE cluster, and the global static IP for the Ingress.
+    *   **Trigger:** This workflow is triggered manually (`workflow_dispatch`), ensuring that infrastructure changes are deliberate and controlled. It includes a manual approval step before applying changes.
+
+2.  **Application Pipeline (`ci-cd.yml`):**
+    *   **Purpose:** Handles the continuous integration and deployment of the NestJS application.
+    *   **Triggers:** Automatically runs on pushes to `main` and `feature/*` branches.
+    *   **Process:**
+        1.  **CI:** Lints and runs unit tests.
+        2.  **Build & Push:** Builds a new Docker image and pushes it to Google Artifact Registry.
+        3.  **Deploy:** Connects to the existing GKE cluster using `kubectl` and applies the Kubernetes manifests from the `/k8s` directory, triggering a rolling update of the application.
+        4.  **Manual Approval:** Deployments to the `production` environment are gated and require manual approval.
+
+This separation provides greater stability and security, as application deployments are lightweight and do not risk unintended changes to the underlying infrastructure.
 
 ### CI/CD Security
 

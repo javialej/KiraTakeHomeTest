@@ -12,7 +12,9 @@ The Security principle refers to the protection of system resources against unau
 *   **Encryption:**
     *   **In Transit:** All data transmitted between the client and the API, as well as between the API and external vendors, is encrypted using TLS/SSL.
     *   **At Rest:** All data stored in cloud services, such as databases and storage buckets, is encrypted at rest by default by the cloud provider.
-*   **Change Management & Access Control:** The CI/CD pipeline enforces a strict change management process. All code and infrastructure changes are reviewed via pull requests. Production deployments require manual approval from designated reviewers, creating a clear audit trail and preventing unauthorized changes.
+*   **Change Management & Access Control:** The CI/CD process enforces a strict change management process. All code and infrastructure changes are reviewed via pull requests.
+    *   **Separation of Concerns:** Infrastructure changes are managed in a dedicated, manually triggered pipeline, completely separate from the application deployment pipeline. This significantly reduces the risk of unintended infrastructure modifications during routine application updates.
+    *   **Manual Approval Gates:** Both infrastructure changes and application deployments to the `production` environment require manual approval from designated reviewers, creating a clear audit trail and preventing unauthorized changes.
 
 ## Availability
 
