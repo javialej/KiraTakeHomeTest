@@ -251,17 +251,17 @@ curl -X POST \
 
 ### Deploying a New Vendor Service
 
-To streamline the process of adding a new payment vendor, you can use the `add-vendor.sh` script. This script automatically scaffolds all the necessary files and updates the application module.
+To streamline the process of adding a new payment vendor, this project includes a custom NestJS schematic. This generator automatically scaffolds all the necessary files and updates the application module.
 
 **Usage:**
 
-1.  **Run the script** from the root of the project, passing the new vendor's name in PascalCase (e.g., `VendorC`).
+1.  **Run the Schematic**: From the root of the project, run the following `nest generate` (or `nest g`) command, passing the new vendor's name in PascalCase (e.g., `VendorC`).
 
     ```bash
-    ./scripts/add-vendor.sh VendorC
+    nest generate vendor VendorC
     ```
 
-2.  **Implement the Logic**: The script will create a new directory at `src/adapter/out/blockchainVendors/vendorc` with boilerplate files. You will need to:
+2.  **Implement the Logic**: The generator will create a new directory at `src/adapter/out/blockchainVendors/vendor-c` with boilerplate files. You will need to:
     *   Implement the actual transfer logic in the new controller file.
     *   Add routing logic for the new vendor in `src/adapter/out/blockchainVendors/blockchainVendors.controller.ts`.
 

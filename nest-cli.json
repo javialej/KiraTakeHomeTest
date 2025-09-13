@@ -4,5 +4,11 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true
+  },
+  "schematics": {
+    "vendor": {
+      "factory": "./schematics/vendor/index#vendor",
+      "schema": "./schematics/vendor/schema.json"
+    }
   }
 }

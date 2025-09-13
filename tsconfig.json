@@ -28,6 +28,7 @@
   "include": [
     "src/**/*.ts",
     "domain/**/*.ts",
-    "__mocks__/**/*.ts"
+    "__mocks__/**/*.ts",
+    "schematics/**/*.ts"
   ]
 }
