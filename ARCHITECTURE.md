@@ -42,6 +42,13 @@ The infrastructure is designed for scalability, reliability, and maintainability
 -   **CI/CD:**
     -   **Automation:** GitHub Actions
 
+### CI/CD Security
+
+The CI/CD pipeline is designed with a security-first approach, leveraging Google Cloud's Workload Identity Federation to establish a trust relationship between GitHub Actions and GCP. This method avoids the use of static, long-lived service account keys, significantly improving the security posture.
+
+-   **Keyless Authentication:** Instead of storing a service account key as a GitHub secret, the workflow obtains a short-lived access token from GCP based on a trusted identity.
+-   **Least Privilege:** The impersonated service account is granted the minimum necessary permissions to perform its tasks (e.g., pushing to Artifact Registry and deploying to GKE).
+
 ### Repository Structure
 
 The repository is organized to reflect the Hexagonal Architecture, with a clear separation between the `domain` and `infrastructure` layers.

@@ -7,7 +7,7 @@ SOC 2 is a compliance framework that specifies how organizations should manage c
 The Security principle refers to the protection of system resources against unauthorized access.
 
 *   **Infrastructure as Code (IaC):** All infrastructure is defined in Terraform and stored in version control. This enables peer reviews for all infrastructure changes, creates a detailed audit trail, and reduces the risk of manual configuration errors that could lead to security vulnerabilities.
-*   **IAM (Identity and Access Management):** Access to the cloud environment is controlled through IAM roles. The CI/CD pipeline uses a dedicated GCP service account with the least-privilege principle to limit its permissions to only what is necessary to deploy and manage the application.
+*   **IAM (Identity and Access Management):** Access to the cloud environment is controlled through IAM roles. The CI/CD pipeline leverages **Workload Identity Federation** to provide secure, keyless authentication from GitHub Actions to GCP. This eliminates the need for long-lived service account keys, reducing the risk of credential leakage. A dedicated service account is impersonated with permissions restricted by the principle of least privilege, ensuring the pipeline can only access the resources it absolutely needs.
 *   **Network Security:** The application is deployed within a dedicated Virtual Private Cloud (VPC) with specific firewall rules. This isolates the application and restricts network traffic to only what is necessary, protecting against unauthorized access and network-based attacks.
 *   **Encryption:**
     *   **In Transit:** All data transmitted between the client and the API, as well as between the API and external vendors, is encrypted using TLS/SSL.
