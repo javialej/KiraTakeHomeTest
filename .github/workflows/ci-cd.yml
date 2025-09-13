@@ -34,6 +34,12 @@ jobs:
     outputs:
       image_tag: ${{ steps.build-and-push.outputs.image_tag }}
     steps:
+      - name: Check for secrets
+        run: |
+          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ] || [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
+            echo "GCP_PROJECT_ID or GCP_SA_KEY secrets are not set."
+            exit 1
+          fi
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Google Cloud SDK
@@ -58,6 +64,12 @@ jobs:
     environment:
       name: development
     steps:
+      - name: Check for secrets
+        run: |
+          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ] || [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
+            echo "GCP_PROJECT_ID or GCP_SA_KEY secrets are not set."
+            exit 1
+          fi
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Google Cloud SDK
@@ -94,6 +106,12 @@ jobs:
     environment:
       name: development
     steps:
+      - name: Check for secrets
+        run: |
+          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ] || [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
+            echo "GCP_PROJECT_ID or GCP_SA_KEY secrets are not set."
+            exit 1
+          fi
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Google Cloud SDK
@@ -123,6 +141,12 @@ jobs:
     environment: production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
+      - name: Check for secrets
+        run: |
+          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ] || [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
+            echo "GCP_PROJECT_ID or GCP_SA_KEY secrets are not set."
+            exit 1
+          fi
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Google Cloud SDK
