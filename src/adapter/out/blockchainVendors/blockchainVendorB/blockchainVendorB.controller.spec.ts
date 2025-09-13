@@ -1,7 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BlockchainVendorBController } from './blockchainVendorB.controller';
-import { VendorRequest, VendorResponse } from '../../../../../domain/src/interface/vendors.interface';
-import { HttpService } from '@nestjs/axios';
+import {Test, TestingModule} from '@nestjs/testing';
+import {BlockchainVendorBController} from './blockchainVendorB.controller';
+import {
+  VendorRequest,
+  VendorResponse,
+} from '../../../../../domain/src/interface/vendors.interface';
 
 describe('BlockchainVendorBController', () => {
   let controller: BlockchainVendorBController;
@@ -17,7 +19,9 @@ describe('BlockchainVendorBController', () => {
       ],
     }).compile();
 
-    controller = module.get<BlockchainVendorBController>(BlockchainVendorBController);
+    controller = module.get<BlockchainVendorBController>(
+      BlockchainVendorBController
+    );
   });
 
   it('should be defined', () => {
