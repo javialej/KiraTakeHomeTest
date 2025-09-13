@@ -134,51 +134,84 @@ The Availability principle refers to the accessibility of the system as stipulat
 
 ## Installation
 
+1.  **Node.js Version:** This project uses a specific version of Node.js. It is recommended to use a version manager like `nvm` to ensure compatibility. Run `nvm use` to automatically switch to the correct version specified in the `.nvmrc` file.
+
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Variables:** Create a `.env` file by copying the `.env.example` file. This file is required to store sensitive information and environment-specific configurations.
+
+## Running the App
+
+-   `npm run build`: Compiles the TypeScript application into JavaScript.
+-   `npm run start`: Starts the compiled application. This is typically used for production.
+-   `npm run start:dev`: Starts the application in development mode with live-reloading.
+-   `npm run start:debug`: Starts the application in debug mode with the Node.js inspector attached.
+-   `npm run start:prod`: Starts the application in production mode.
+-   `npm run lint`: Lints the codebase to check for style and syntax errors.
+-   `npm run lint:fix`: Lints the codebase and automatically fixes any fixable issues.
+
+## Testing
+
+-   `npm test`: Runs all unit and integration tests using Jest.
+-   `npm test:watch`: Runs tests in watch mode, re-running them whenever a file is changed.
+-   `npm test:cov`: Runs tests and generates a code coverage report.
+-   `npm test:debug`: Runs tests in debug mode, allowing you to attach a debugger.
+
+## Local Testing
+
+This project includes a Docker Compose setup that allows you to run and test the application locally without needing to install any dependencies other than Docker.
+
+### Prerequisites
+
+-   [Docker](https://www.docker.com/get-started) must be installed and running on your machine.
+
+### Running the Application Locally
+
+1.  **Start the application:**
+
+    ```bash
+    docker-compose up --build
+    ```
+
+    This command will build the Docker image for the application and start the container. The API will be available at `http://localhost:3000`.
+
+2.  **Send a test request:**
+
+    You can use a tool like `curl` to send a `POST` request to the `/transfer` endpoint. Note that you will need to provide a valid JWT in the `Authorization` header.
+
+    ```bash
+    curl -X POST \
+      http://localhost:3000/api-domain/transfer \
+      -H 'Content-Type: application/json' \
+      -H 'Authorization: Bearer <your-jwt-here>' \
+      -d '{ "amount": 100, "vendor": "vendorA", "txhash": "0x123..." }'
+    ```
+
+3.  **Expected Response:**
+
+    If the request is successful, you should receive a `201 Created` response with the transfer data in the response body:
+
+    ```json
+    {
+      "statusCode": 201,
+      "message": "Transfer request received.",
+      "data": {
+        "amount": 100,
+        "vendor": "vendorA",
+        "txhash": "0x123..."
+      }
+    }
+    ```
+
+### Cleanup
+
+To stop and remove the containers, run the following command:
+
 ```bash
-# installation
-$ npm install
-```
-
-## Running the app
-
-```bash
-# build
-$ npm run build
-
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# debug mode
-$ npm run start:debug
-
-# production mode
-$ npm run start:prod
-
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# unit tests with watch
-$ npm run test:watch
-
-# unit tests with coverage
-$ npm run test:cov
-
-# unit tests debug mode
-$ npm run test:debug
-
-# e2e tests
-$ npm run test:e2e
-
-# e2e tests with coverage
-$ npm run test:e2e-cov
+docker-compose down
 ```
 
 ## Support
