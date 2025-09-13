@@ -1,6 +1,5 @@
 
 import { PaymentsDataBaseRepository } from './adapter/out/firestore/payments-database.controller';
-import { UtilsDomainDatabase } from './adapter/out/firestore/utils';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpModule, HttpService } from '@nestjs/axios';
@@ -10,17 +9,18 @@ import { ApiPaymentsController } from './adapter/in/http/api-payments.controller
 import { HealthController } from './adapter/in/http/health.controller';
 import { TypeOrmHealthRepository } from './adapter/out/postgres/typeorm-health.repository';
 import { HandlerGetServerHealthStatus } from './handler/get-server-health-status.handler';
-import { VendorAController } from './adapter/out/vendors/vendorA/vendorA.controller';
-import { VendorBController } from './adapter/out/vendors/vendorB/vendorB.controller';
+import { BlockchainVendorAController } from './adapter/out/blockchainVendors/blockchainVendorA/blockchainVendorA.controller';
+import { BlockchainVendorBController } from './adapter/out/blockchainVendors/blockchainVendorB/blockchainVendorB.controller';
 import { PostCreateTransferUseCase } from '../domain/src/usecase/post-create-transfer.usecase';
 import { PostCreateTransferHandler } from './handler/post-create-transfer.handler';
-import { VendorsController } from './adapter/out/vendors/vendors.controller';
+import { BlockchainVendorsController } from './adapter/out/blockchainVendors/blockchainVendors.controller';
 import { IVendors } from 'domain/src/interface/vendors.interface';
 import { ILogger } from 'domain/src/interface/logger.interface';
-import { NestjsLoggerAdapter } from './adapter/out/logger/nestjs-logger.adapter';
+import { CommonsModule } from './common.module';
+import { LoggerService } from './common/logger/logger.service';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, CommonsModule],
   controllers: [HealthController, ApiPaymentsController],
   providers: [
     {
@@ -35,26 +35,19 @@ import { NestjsLoggerAdapter } from './adapter/out/logger/nestjs-logger.adapter'
       inject: ['TypeOrmHealthRepository'],
     },
     {
-      provide: 'UtilsDomainDatabase',
+      provide: 'PaymentsDataBaseRepository',
       useFactory: (configService: ConfigService) => {
-        return new UtilsDomainDatabase(configService);
+        return new PaymentsDataBaseRepository(configService);
       },
       inject: [ConfigService],
     },
     {
-      provide: 'PaymentsDataBaseRepository',
-      useFactory: (utilsDomainDatabase: UtilsDomainDatabase) => {
-        return new PaymentsDataBaseRepository(utilsDomainDatabase);
-      },
-      inject: ['UtilsDomainDatabase'],
-    },
-    {
       provide: 'IVendors',
-      useClass: VendorsController,
+      useClass: BlockchainVendorsController,
     },
     {
       provide: 'ILogger',
-      useClass: NestjsLoggerAdapter,
+      useClass: LoggerService,
     },
     {
       provide: 'PostCreateTransferUseCase',
@@ -64,20 +57,20 @@ import { NestjsLoggerAdapter } from './adapter/out/logger/nestjs-logger.adapter'
       inject: ['IVendors', 'ILogger'],
     },
     {
-      provide: 'VendorAController',
+      provide: 'BlockchainVendorAController',
       useFactory: (httpService: HttpService) => {
-        return new VendorAController(httpService);
+        return new BlockchainVendorAController(httpService);
       },
       inject: [HttpService],
     },
     {
-      provide: 'VendorBController',
+      provide: 'BlockchainVendorBController',
       useFactory: (httpService: HttpService) => {
-        return new VendorBController(httpService);
+        return new BlockchainVendorBController(httpService);
       },
       inject: [HttpService],
     },
-    VendorsController, // Ensure the main controller is provided
+    BlockchainVendorsController, // Ensure the main controller is provided
     HandlerGetServerHealthStatus,
     PostCreateTransferHandler,
   ],

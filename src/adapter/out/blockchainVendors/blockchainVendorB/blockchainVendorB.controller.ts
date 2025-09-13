@@ -9,45 +9,37 @@ import { IVendors, VendorRequest, VendorResponse } from '../../../../../domain/s
 
 // DTOs specific to Vendor B
 class VendorBRequestDto {
-  readonly paymentId!: string;
-  readonly destination!: {
-    readonly name: string;
-    readonly account: string;
-  };
-  readonly details!: {
-    readonly amount: number;
-    readonly currency: string;
-  };
+  readonly sourceTxHash!: string;
+  readonly destinationAddress!: string;
+  readonly amount!: number;
+  readonly asset!: string;
+  readonly network!: string;
 }
 
 class VendorBResponseDto {
-  readonly id!: string;
-  readonly executionStatus!: string;
+  readonly offRampTransactionId!: string;
+  readonly status!: string;
 }
 
 @Injectable()
-export class VendorBController implements IVendors {
+export class BlockchainVendorBController implements IVendors {
   constructor(
     @Inject('httpService') private readonly httpService: HttpService,
   ) {}
 
   public async requestToVendors(request: VendorRequest): Promise<VendorResponse> {
-    const url = 'https://api.vendorb.io/v2/payments'; // Example endpoint
+    const url = 'https://api.vendorb.io/v3/offramp/initiate'; // Example endpoint
     const headers = {
       'Authorization': `Bearer your-vendor-b-secret-token`, // Example header
     };
 
     // Map domain request to vendor-specific DTO
     const vendorRequest: VendorBRequestDto = {
-      paymentId: request.txhash,
-      destination: {
-        name: 'User Name', // Example mapping
-        account: '1234567890', // Example mapping
-      },
-      details: {
-        amount: request.amount,
-        currency: 'COP', // Assuming a default or logic to determine currency
-      },
+      sourceTxHash: request.txhash,
+      destinationAddress: '0x...user-bank-account-surrogate', // Example mapping
+      amount: request.amount,
+      asset: 'USDC',
+      network: 'ETHEREUM', // Example mapping
     };
 
     try {
@@ -65,9 +57,9 @@ export class VendorBController implements IVendors {
 
       // Map vendor-specific response back to domain response
       return {
-        status: response.data.executionStatus,
-        transactionId: response.data.id,
-        provider: 'VendorB',
+        status: response.data.status,
+        transactionId: response.data.offRampTransactionId,
+        provider: 'BlockchainVendorB',
         rawData: response.data,
       };
     } catch (error) {

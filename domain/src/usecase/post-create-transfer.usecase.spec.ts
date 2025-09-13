@@ -1,22 +1,43 @@
-import {PostCreateTransferUseCase} from './post-create-transfer.usecase';
-import {CreateTransferDto} from '../../../src/adapter/in/http/dto/create-transfer.dto';
+import { PostCreateTransferUseCase } from './post-create-transfer.usecase';
+import { IVendors, VendorRequest, VendorResponse } from '../interface/vendors.interface';
+import { ILogger } from '../interface/logger.interface';
 
 describe('PostCreateTransferUseCase', () => {
   let useCase: PostCreateTransferUseCase;
+  let vendors: IVendors;
+  let logger: ILogger;
 
   beforeEach(() => {
-    useCase = new PostCreateTransferUseCase();
+    vendors = {
+      requestToVendors: jest.fn(),
+    };
+    logger = {
+      log: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+    };
+    useCase = new PostCreateTransferUseCase(vendors, logger);
   });
 
-  it('should return the command', async () => {
-    const command: CreateTransferDto = {
+  it('should call the vendor and return the response', async () => {
+    const request: VendorRequest = {
       amount: 100,
-      vendor: 'test',
       txhash: '0x123',
     };
+    const expectedResponse: VendorResponse = {
+      status: 'CONFIRMED',
+      transactionId: '0xabc',
+      provider: 'BlockchainVendorA',
+      rawData: {},
+    };
 
-    const result = await useCase.apply(command);
+    (vendors.requestToVendors as jest.Mock).mockResolvedValue(expectedResponse);
 
-    expect(result).toEqual(command);
+    const result = await useCase.apply(request);
+
+    expect(vendors.requestToVendors).toHaveBeenCalledWith(request);
+    expect(result).toEqual(expectedResponse);
+    expect(logger.log).toHaveBeenCalledWith('PostCreateTransferUseCase initialized');
   });
 });

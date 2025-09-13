@@ -1,9 +1,9 @@
 
 import {Inject, Injectable, Logger, NotFoundException} from '@nestjs/common';
 import { IVendors, VendorRequest, VendorResponse } from '../../../../domain/src/interface/vendors.interface';
-import { VendorAController } from './vendorA/vendorA.controller';
-import { VendorBController } from './vendorB/vendorB.controller';
-// import { VendorCController } from './vendorC/vendorC.controller'; // Placeholder for VendorC
+import { BlockchainVendorAController } from './blockchainVendorA/blockchainVendorA.controller';
+import { BlockchainVendorBController } from './blockchainVendorB/blockchainVendorB.controller';
+// import { BlockchainVendorCController } from './vendorC/vendorC.controller'; // Placeholder for VendorC
 
 interface VendorStrategy {
   name: string;
@@ -12,27 +12,27 @@ interface VendorStrategy {
 }
 
 @Injectable()
-export class VendorsController implements IVendors {
+export class BlockchainVendorsController implements IVendors {
   private strategies: VendorStrategy[];
 
   constructor(
-    @Inject('VendorAController') private readonly vendorA: VendorAController,
-    @Inject('VendorBController') private readonly vendorB: VendorBController,
-    // @Inject('VendorCController') private readonly vendorC: VendorCController, // Placeholder for VendorC
+    @Inject('BlockchainVendorAController') private readonly vendorA: BlockchainVendorAController,
+    @Inject('BlockchainVendorBController') private readonly vendorB: BlockchainVendorBController,
+    // @Inject('BlockchainVendorCController') private readonly vendorC: BlockchainVendorCController, // Placeholder for VendorC
   ) {
     this.strategies = [
       {
-        name: 'VendorA',
+        name: 'BlockchainVendorA',
         condition: (request) => request.amount <= 100,
         handler: this.vendorA,
       },
       {
-        name: 'VendorB',
+        name: 'BlockchainVendorB',
         condition: () => true, // Default catch-all strategy
         handler: this.vendorB,
       },
       // {
-      //   name: 'VendorC',
+      //   name: 'BlockchainVendorC',
       //   condition: (request) => request.amount > 500, // Example condition for VendorC
       //   handler: this.vendorC,
       // },

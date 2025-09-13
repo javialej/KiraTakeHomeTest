@@ -5,6 +5,7 @@
 [![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white&style=plastic)](https://www.npmjs.com/)
 [![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white&style=plastic)](https://www.typescriptlang.org/)
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kira-take-home-test&metric=coverage)](https://sonarcloud.io/summary/new_code?id=kira-take-home-test)
 
 # Payments API Module - Kira Take-Home Test: Platform Engineer
 
@@ -18,6 +19,33 @@ The platform's hexagonal architecture ensures that new vendors can be added with
 
 -   [**Architecture**](./ARCHITECTURE.md): An in-depth explanation of the hexagonal architecture, infrastructure design, vendor extensibility, and transaction verification flow.
 -   [**SOC 2 Alignment**](./SOC2.md): A description of how the infrastructure and processes align with SOC 2 principles.
+
+## Code Coverage
+
+| File                                                          | % Stmts | % Branch | % Funcs | % Lines |
+| ------------------------------------------------------------- | ------- | -------- | ------- | ------- |
+| **All files**                                                 | **98.98** | **76.08** | **100** | **98.83** |
+| domain/src/common                                             | 100     | 100      | 100     | 100     |
+| domain/src/model                                              | 100     | 100      | 100     | 100     |
+| domain/src/usecase                                            | 100     | 100      | 100     | 100     |
+| src/adapter/in/http                                           | 100     | 77.27    | 100     | 100     |
+| src/adapter/in/http/dto                                       | 100     | 100      | 100     | 100     |
+| src/adapter/out/blockchainVendors                             | 100     | 80       | 100     | 100     |
+| src/adapter/out/blockchainVendors/blockchainVendorA           | 100     | 75       | 100     | 100     |
+| src/adapter/out/blockchainVendors/blockchainVendorA/dto       | 100     | 100      | 100     | 100     |
+| src/adapter/out/blockchainVendors/blockchainVendorB           | 100     | 75       | 100     | 100     |
+| src/adapter/out/blockchainVendors/blockchainVendorB/dto       | 100     | 100      | 100     | 100     |
+| src/adapter/out/firestore                                     | 92.85   | 66.66    | 100     | 91.66   |
+| src/adapter/out/postgres                                      | 94.11   | 60       | 100     | 93.1    |
+| src/common/logger                                             | 100     | 60       | 100     | 100     |
+| src/common/metrics                                            | 100     | 100      | 100     | 100     |
+| src/common/response-states                                    | 100     | 100      | 100     | 100     |
+| src/common/utils                                              | 100     | 100      | 100     | 100     |
+| src/handler                                                   | 100     | 78.57    | 100     | 100     |
+| src/model/dto                                                 | 100     | 100      | 100     | 100     |
+| src/model/enum                                                | 100     | 100      | 100     | 100     |
+| src/model/exceptions                                          | 100     | 100      | 100     | 100     |
+| src/model/mapper                                              | 100     | 100      | 100     | 100     |
 
 ## Installation
 
@@ -42,10 +70,9 @@ The platform's hexagonal architecture ensures that new vendors can be added with
 
 ## Testing
 
--   `npm test`: Runs all unit and integration tests using Jest.
--   `npm test:watch`: Runs tests in watch mode, re-running them whenever a file is changed.
--   `npm test:cov`: Runs tests and generates a code coverage report.
--   `npm test:debug`: Runs tests in debug mode, allowing you to attach a debugger.
+-   `npm test`: Runs all unit tests.
+-   `npm run test:cov`: Runs all unit tests and generates a code coverage report.
+-   `npm run test:watch`: Runs tests in watch mode, re-running them whenever a file is changed.
 
 ## Local Testing
 
@@ -73,7 +100,7 @@ This project includes a Docker Compose setup that allows you to run and test the
     curl -X POST \
       http://localhost:3000/api-payments/transfer \
       -H 'Content-Type: application/json' \
-      -d '{ "amount": 100, "vendor": "vendorA", "txhash": "0x123..." }'
+      -d '{ "amount": 100, "txhash": "0x123..." }'
     ```
 
 3.  **Expected Response:**
@@ -88,9 +115,13 @@ This project includes a Docker Compose setup that allows you to run and test the
         "code": "OK",
         "message": "Transfer created successfully",
         "data": {
-            "amount": 100,
-            "vendor": "vendorA",
-            "txhash": "0x123..."
+            "status": "CONFIRMED",
+            "transactionId": "0xabc-vendor-a",
+            "provider": "BlockchainVendorA",
+            "rawData": {
+                "transactionStatus": "CONFIRMED",
+                "destinationTransactionHash": "0xabc-vendor-a"
+            }
         }
     }
     ```

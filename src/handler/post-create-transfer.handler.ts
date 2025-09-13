@@ -6,33 +6,51 @@ import {getTracer} from '../common/utils/general.util';
 import {CreateTransferDto} from '../adapter/in/http/dto/create-transfer.dto';
 import {PostCreateTransferUseCase} from '../../domain/src/usecase/post-create-transfer.usecase';
 import {PostCreateTransferMapper} from '../model/mapper/post-create-transfer.mapper';
+import { MetricsService } from '../common/metrics/metrics.service';
 
 @Injectable()
 export class PostCreateTransferHandler {
   constructor(
     @Inject('PostCreateTransferUseCase')
     private readonly postCreateTransferUC: PostCreateTransferUseCase,
+    private readonly metricsService: MetricsService,
   ) {}
 
   async execute(request: CreateTransferDto): Promise<HTTPResponse> {
-    return getTracer().startActiveSpan(
-      'PostCreateTransferUseCase.apply',
-      {attributes: {'transfer.vendor': request.vendor}},
-      async (span: Span): Promise<HTTPResponse> => {
-        try {
-          const command = PostCreateTransferMapper.toModel(request);
-          const transfer = await this.postCreateTransferUC.apply(command);
-          const response = PostCreateTransferMapper.toDTO(transfer);
-          return new HTTPResponse(
-            HttpStatus.CREATED,
-            SUCCESS_STATES_MESSAGES.Success.code,
-            'Transfer created successfully',
-            response,
-          );
-        } finally {
-          span.end();
-        }
-      },
-    );
+    const startTime = Date.now();
+    let status: 'success' | 'failure' = 'success';
+    let vendor = 'unknown';
+
+    try {
+      const response = await getTracer().startActiveSpan(
+        'PostCreateTransferUseCase.apply',
+        { attributes: { 'transfer.txhash': request.txhash } },
+        async (span: Span): Promise<HTTPResponse> => {
+          try {
+            const command = PostCreateTransferMapper.toModel(request);
+            const transfer = await this.postCreateTransferUC.apply(command);
+            vendor = transfer.provider; // Get vendor from the result
+            const dto = PostCreateTransferMapper.toDTO(transfer);
+            return new HTTPResponse(
+              HttpStatus.CREATED,
+              SUCCESS_STATES_MESSAGES.Success.code,
+              'Transfer created successfully',
+              dto,
+            );
+          } catch (error) {
+            status = 'failure';
+            throw error; // Re-throw the error to be handled by exception filters
+          } finally {
+            span.end();
+          }
+        },
+      );
+      return response;
+    } finally {
+      const latency = Date.now() - startTime;
+      this.metricsService.incrementTransfersTotal(vendor, status);
+      this.metricsService.recordTransferAmount(request.amount, vendor);
+      this.metricsService.recordTransferLatency(latency, vendor);
+    }
   }
 }

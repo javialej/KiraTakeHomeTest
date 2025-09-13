@@ -1,17 +1,21 @@
 import sdk from './instrumentation'; // Must import the OpenTelemetry SDK as first line of the main file
-import {Logger, ValidationPipe} from '@nestjs/common';
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 import * as rTracer from 'cls-rtracer';
-import {ConfigService} from '@nestjs/config';
-import {ExceptionManager} from './common/exceptions/exceptions-manager.filter';
-import {RestInterceptor} from './common/interceptors/rest.interceptor';
-import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { ExceptionManager } from './common/exceptions/exceptions-manager.filter';
+import { RestInterceptor } from './common/interceptors/rest.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { LoggerService } from './common/logger/logger.service';
 
 async function bootstrap() {
   // Must start the OpenTelemetry SDK before creating the NestJS application
   sdk.start();
-  const app = await NestFactory.create(AppModule, {cors: true});
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    logger: new LoggerService(),
+  });
 
   //Configuración librería para validación de DTOs
   app.useGlobalPipes(
@@ -19,7 +23,7 @@ async function bootstrap() {
       whitelist: true,
       forbidUnknownValues: true,
       skipNullProperties: true,
-    })
+    }),
   );
 
   //Configuración libreria para generación de indentificador de solicitud
@@ -38,8 +42,8 @@ async function bootstrap() {
 
   // Swagger
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('MS Feature')
-    .setDescription('The MS Feature API description')
+    .setTitle('MS Payments API')
+    .setDescription('The MS Payments API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -48,7 +52,8 @@ async function bootstrap() {
   // Inicialización de la aplicación
   const port = config.get<number>('PORT') ?? 3000;
   await app.listen(port, () => {
-    Logger.log(`Application is running on: port: ${port}`);
+    const logger = new LoggerService();
+    logger.log(`Application is running on: port: ${port}`);
   });
 }
 void bootstrap();

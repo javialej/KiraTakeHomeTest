@@ -9,33 +9,35 @@ import { IVendors, VendorRequest, VendorResponse } from '../../../../../domain/s
 
 // DTOs specific to Vendor A
 class VendorARequestDto {
-  readonly transactionId!: string;
+  readonly sourceTransactionHash!: string;
   readonly amount!: number;
-  readonly currency!: string;
+  readonly targetAsset!: string;
+  readonly network!: string;
 }
 
 class VendorAResponseDto {
-  readonly status!: string;
-  readonly confirmationId!: string;
+  readonly transactionStatus!: string;
+  readonly destinationTransactionHash!: string;
 }
 
 @Injectable()
-export class VendorAController implements IVendors {
+export class BlockchainVendorAController implements IVendors {
   constructor(
     @Inject('httpService') private readonly httpService: HttpService,
   ) {}
 
   public async requestToVendors(request: VendorRequest): Promise<VendorResponse> {
-    const url = 'https://api.vendora.com/transfer'; // Example endpoint
+    const url = 'https://api.vendora.com/v1/blockchain/transfer'; // Example endpoint
     const headers = {
       'X-Api-Key': `your-vendor-a-api-key`, // Example header
     };
 
     // Map domain request to vendor-specific DTO
     const vendorRequest: VendorARequestDto = {
-      transactionId: request.txhash,
+      sourceTransactionHash: request.txhash,
       amount: request.amount,
-      currency: 'USD', // Assuming a default or logic to determine currency
+      targetAsset: 'COP', // Assuming conversion to Colombian Peso
+      network: 'POLYGON', // Assuming a default or logic to determine network
     };
 
     try {
@@ -53,9 +55,9 @@ export class VendorAController implements IVendors {
 
       // Map vendor-specific response back to domain response
       return {
-        status: response.data.status,
-        transactionId: response.data.confirmationId,
-        provider: 'VendorA',
+        status: response.data.transactionStatus,
+        transactionId: response.data.destinationTransactionHash,
+        provider: 'BlockchainVendorA',
         rawData: response.data,
       };
     } catch (error) {

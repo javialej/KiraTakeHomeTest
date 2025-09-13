@@ -1,38 +1,44 @@
-import {Logger} from '@nestjs/common';
-import {ILogger} from '../../../domain/src/interface/logger.interface';
 
-export const LoggerServiceKey = Symbol();
+import { Injectable, ConsoleLogger } from '@nestjs/common';
+import * as rtracer from 'cls-rtracer';
+import { ILogger } from '../../../domain/src/interface/logger.interface';
 
-export class LoggerService implements ILogger {
-  private readonly sourceClass: string;
-  private readonly logger: Logger;
-
-  public constructor(parentClass: object | string) {
-    this.sourceClass =
-      typeof parentClass === 'string'
-        ? parentClass
-        : parentClass.constructor.name;
-
-    this.logger = new Logger(this.sourceClass);
+@Injectable()
+export class LoggerService extends ConsoleLogger implements ILogger {
+  log(message: any, context?: string) {
+    this.printMessage('info', message, context);
   }
 
-  debug(message: string): void {
-    this.logger.debug(message);
-  }
-  warn(message: string | object): void {
-    this.logger.warn(message);
-  }
-  error(error: string | Error | object): void {
-    if (error instanceof Error) {
-      this.logger.error(error.message, error.stack);
-    } else if (error instanceof Object) {
-      this.logger.error(JSON.stringify(error));
-    } else {
-      this.logger.error(error);
-    }
+  error(message: any, trace?: string, context?: string) {
+    const errorMessage = message instanceof Error ? message.message : message;
+    const stackTrace = message instanceof Error ? message.stack : trace;
+    this.printMessage('error', errorMessage, context, stackTrace);
   }
 
-  log(message: string | object): void {
-    this.logger.log(message);
+  warn(message: any, context?: string) {
+    this.printMessage('warn', message, context);
+  }
+
+  debug(message: any, context?: string) {
+    this.printMessage('debug', message, context);
+  }
+
+  private printMessage(
+    severity: string,
+    message: any,
+    context?: string,
+    trace?: string,
+  ) {
+    const traceId = rtracer.id();
+    const logObject = {
+      severity: severity.toUpperCase(),
+      message: typeof message === 'object' ? JSON.stringify(message) : message,
+      context: context || this.context,
+      trace_id: traceId,
+      timestamp: new Date().toISOString(),
+      ...(trace && { stack_trace: trace }),
+    };
+    process.stdout.write(`${JSON.stringify(logObject)}
+`);
   }
 }
