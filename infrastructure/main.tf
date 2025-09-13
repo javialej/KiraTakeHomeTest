@@ -1,5 +1,9 @@
 
 terraform {
+  backend "gcs" {
+    bucket  = "kiratakehometest-tfstate"
+    prefix  = "terraform/state"
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
