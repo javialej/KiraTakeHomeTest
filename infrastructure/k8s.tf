@@ -1,4 +1,3 @@
-
 provider "kubernetes" {
   host                   = "https://${module.gke.cluster_endpoint}"
   token                  = data.google_client_config.default.access_token
@@ -6,6 +5,22 @@ provider "kubernetes" {
 }
 
 data "google_client_config" "default" {}
+
+resource "kubernetes_secret" "app_secrets" {
+  metadata {
+    name = "app-secrets"
+  }
+
+  data = {
+    DB_HOST         = var.db_host
+    DB_PORT         = var.db_port
+    DB_USERNAME     = var.db_username
+    DB_PASSWORD     = var.db_password
+    DB_NAME         = var.db_name
+    SERVICE_NAME    = var.service_name
+    COLLECTION_NAME = var.collection_name
+  }
+}
 
 resource "kubernetes_deployment" "app" {
   metadata {
@@ -34,7 +49,13 @@ resource "kubernetes_deployment" "app" {
           name  = var.project_name
 
           port {
-            container_port = 80
+            container_port = 3000
+          }
+
+          env_from {
+            secret_ref {
+              name = kubernetes_secret.app_secrets.metadata.0.name
+            }
           }
         }
       }
@@ -54,7 +75,7 @@ resource "kubernetes_service" "app_service" {
 
     port {
       port        = 80
-      target_port = 80
+      target_port = 3000
     }
 
     type = "LoadBalancer"
