@@ -32,47 +32,17 @@ export class BlockchainVendorAController implements IVendors {
   public async requestToVendors(
     request: VendorRequest
   ): Promise<VendorResponse> {
-    const url = 'https://api.vendora.com/v1/blockchain/transfer'; // Example endpoint
-    const headers = {
-      'X-Api-Key': `your-vendor-a-api-key`, // Example header
+    // Mocked response for Vendor A
+    const mockResponse = {
+      transactionStatus: 'CONFIRMED',
+      destinationTransactionHash: `0xabc-vendor-a-${request.txhash.slice(0, 5)}`,
     };
 
-    // Map domain request to vendor-specific DTO
-    const vendorRequest: VendorARequestDto = {
-      sourceTransactionHash: request.txhash,
-      amount: request.amount,
-      targetAsset: 'COP', // Assuming conversion to Colombian Peso
-      network: 'POLYGON', // Assuming a default or logic to determine network
-    };
-
-    try {
-      const response = await firstValueFrom(
-        this.httpService
-          .post<VendorAResponseDto>(url, vendorRequest, {headers})
-          .pipe(
-            catchError((error: AxiosError) => {
-              throw new CustomException(
-                error as Error,
-                'Technical',
-                ERROR_STATES_MESSAGES.BusinessException
-              );
-            })
-          )
-      );
-
-      // Map vendor-specific response back to domain response
-      return {
-        status: response.data.transactionStatus,
-        transactionId: response.data.destinationTransactionHash,
-        provider: 'BlockchainVendorA',
-        rawData: response.data,
-      };
-    } catch (error) {
-      throw new CustomException(
-        error as Error,
-        'Technical',
-        ERROR_STATES_MESSAGES.BusinessException
-      );
-    }
+    return Promise.resolve({
+      status: mockResponse.transactionStatus,
+      transactionId: mockResponse.destinationTransactionHash,
+      provider: 'BlockchainVendorA',
+      rawData: mockResponse,
+    });
   }
 }
