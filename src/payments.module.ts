@@ -5,11 +5,9 @@ import {ConfigService} from '@nestjs/config';
 import {HttpModule, HttpService} from '@nestjs/axios';
 import {IHealthRepository} from 'domain/src/interface/health.repository';
 import {GetHealthUseCase} from 'domain/src/usecase/get-health.usecase';
-import {GetFeatureUseCase} from '../domain/src/usecase/get-feature.usecase';
 import {ApiPaymentsController} from './adapter/in/http/api-payments.controller';
 import {HealthController} from './adapter/in/http/health.controller';
 import {TypeOrmHealthRepository} from './adapter/out/postgres/typeorm-health.repository';
-import {HandlerGetFeature} from './handler/get-feature.handler';
 import {HandlerGetServerHealthStatus} from './handler/get-server-health-status.handler';
 import {SlackNotification} from './adapter/out/slack/notification.controller';
 import {BackOfficeNotification} from './adapter/out/backoffice/notification.controller';
@@ -67,19 +65,6 @@ import {PostCreateTransferHandler} from './handler/post-create-transfer.handler'
       inject: ['SlackNotification', ConfigService],
     },
     {
-      provide: 'GetFeatureUseCase',
-      useFactory: (
-        domainDataBaseRepository: DomainDataBaseRepository,
-        backOfficeNotification: IBackOfficeNotification,
-      ) => {
-        return new GetFeatureUseCase(
-          domainDataBaseRepository,
-          backOfficeNotification,
-        );
-      },
-      inject: ['DomainDataBaseRepository', 'BackOfficeNotification'],
-    },
-    {
       provide: 'PostCreateTransferUseCase',
       useFactory: () => {
         return new PostCreateTransferUseCase();
@@ -100,7 +85,6 @@ import {PostCreateTransferHandler} from './handler/post-create-transfer.handler'
       },
       inject: [HttpService],
     },
-    HandlerGetFeature,
     HandlerGetServerHealthStatus,
     PostCreateTransferHandler,
   ],
