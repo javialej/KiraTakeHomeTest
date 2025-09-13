@@ -172,20 +172,16 @@ The project has a comprehensive suite of unit tests.
 
 ## Project Structure
 
-The repository is organized to reflect the Hexagonal Architecture, with a clear separation between the `domain` (core business logic) and `infrastructure` layers.
+The repository is organized to reflect the Hexagonal Architecture, with a clear separation between the `domain` (core business logic), `infrastructure` (cloud resources), and `k8s` (application deployment) layers.
 
 ```
 .
-├── .github/                # CI/CD workflows and PR templates
-├── domain/                 # Core business logic (independent of frameworks)
-├── infrastructure/         # Infrastructure as Code (Terraform)
-├── src/                    # NestJS application layer (infrastructure and adapters)
-│   ├── adapter/
-│   │   ├── in/http/        # Inbound adapters (REST API controllers)
-│   │   └── out/            # Outbound adapters (database, external APIs)
-│   ├── common/             # Shared utilities, filters, and interceptors
-│   └── ...
-├── Dockerfile
+├── .github/                # CI/CD workflows
+├── domain/                 # Core business logic (framework-agnostic)
+├── infrastructure/         # Terraform code for core GCP resources (GKE, VPC, etc.)
+├── k8s/                    # Kubernetes manifests for the application (deployment, service, ingress)
+├── src/                    # NestJS application layer (adapters, controllers, etc.)
+├── ...
 └── README.md
 ```
 
@@ -193,31 +189,36 @@ The repository is organized to reflect the Hexagonal Architecture, with a clear 
 
 ## CI/CD Pipelines
 
-The project uses two distinct GitHub Actions workflows to separate infrastructure management from application deployment.
+The project uses two distinct GitHub Actions workflows to safely separate infrastructure management from application deployment.
 
 ### 1. Infrastructure Pipeline (`infrastructure.yml`)
 
--   **Purpose**: Manages the lifecycle of the core cloud infrastructure (VPC, GKE Cluster, etc.) for a specific environment.
--   **Trigger**: Manual execution (`workflow_dispatch`).
+This workflow is responsible for provisioning the core cloud infrastructure.
+
+-   **What it does**: Runs `terraform apply` to create the GKE Cluster, VPC, Subnets, and the global static IP address for the Ingress.
+-   **Trigger**: Manual execution only (`workflow_dispatch`).
 -   **How to Run**:
-    1.  Navigate to the **Actions** tab in the GitHub repository.
-    2.  Select the **Infrastructure CI/CD** workflow from the list.
-    3.  Click the **Run workflow** button.
-    4.  Use the dropdown menu to select the target environment (`development` or `production`).
-    5.  Click the green **Run workflow** button to start the process.
--   **Details**: This workflow uses Terraform workspaces to create and manage isolated infrastructure for each environment. It should be run once to provision a new environment and only re-run when infrastructure changes are needed.
+    1.  Navigate to the **Actions** tab in GitHub.
+    2.  Select the **Infrastructure CI/CD** workflow.
+    3.  Click **Run workflow**, choosing the target environment (`development` or `production`).
+    4.  The `plan` job will run, showing you the proposed changes.
+    5.  **Approve the `apply` job** to proceed with the infrastructure changes.
+-   **When to run**: You should run this once to set up an environment, or when you need to make changes to the core infrastructure (e.g., modifying the GKE cluster or VPC settings).
 
 ### 2. Application CI/CD Pipeline (`ci-cd.yml`)
 
--   **Purpose**: Builds, tests, and deploys the application to an existing GKE cluster.
--   **Triggers**:
-    -   Push to `main` or `feature/*` branches.
-    -   Pull request to `main`.
--   **Flow**:
+This workflow is responsible for building and deploying the application to an existing cluster.
+
+-   **What it does**: Builds a Docker image, pushes it to the Artifact Registry, and deploys it to the GKE cluster using `kubectl`.
+-   **Triggers**: Runs automatically on every push to `main` or `feature/*` branches.
+-   **Deployment Flow**:
     1.  **CI**: Runs linting and unit tests.
-    2.  **Build & Push**: Builds a new Docker image and pushes it to Google Artifact Registry.
-    3.  **Deploy**: Connects to the GKE cluster and updates the running application to use the new Docker image.
-    4.  **Manual Approval**: Deployments to the `production` environment require manual approval from a designated reviewer in GitHub.
+    2.  **Build & Push**: Builds a new Docker image tagged with the commit SHA.
+    3.  **Deploy**:
+        *   Creates/updates a Kubernetes secret (`app-secrets`) with the latest application configuration from GitHub Secrets.
+        *   Applies the Kubernetes manifests from the `/k8s` directory (`deployment.yaml`, `service.yaml`, `ingress.yaml`).
+        *   Updates the running deployment to use the newly built Docker image.
+    4.  **Manual Approval**: Deployments to the `production` environment (triggered by a push to `main`) require manual approval before the `deploy_prod` job will run.
 
 ### CI/CD Configuration and Secrets
 
