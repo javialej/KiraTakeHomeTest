@@ -87,6 +87,8 @@ jobs:
           URL=$(terraform output -raw service_url)
           curl -f $URL/health
         working-directory: ./infrastructure
+
+  destroy_dev:
     runs-on: ubuntu-latest
     if: github.event_name == 'delete' && startsWith(github.ref, 'refs/heads/feature/')
     environment:
