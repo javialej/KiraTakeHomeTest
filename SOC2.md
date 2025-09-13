@@ -19,7 +19,7 @@ The Security principle refers to the protection of system resources against unau
 The Availability principle refers to the accessibility of the system as stipulated by a contract or service level agreement (SLA).
 
 *   **High Availability:** The use of Google Kubernetes Engine (GKE) ensures that the application is highly available. GKE automatically manages the health of the application by restarting failed containers and distributing traffic across multiple replicas, which minimizes downtime.
-*   **Reliable Deployments:** The automated CI/CD pipeline ensures that deployments are consistent and repeatable, which significantly reduces the risk of human error that could cause an outage.
+*   **Reliable Deployments:** The automated application pipeline uses `kubectl` to perform rolling updates to the GKE cluster. This is a standard, reliable method that ensures deployments are consistent and minimize downtime. This separation from infrastructure management reduces the complexity of each deployment, lowering the risk of human error that could cause an outage.
 *   **Disaster Recovery:** Because the entire infrastructure is defined as code, it can be quickly and reliably redeployed in the event of a regional outage or other disaster. This dramatically improves the Recovery Time Objective (RTO) and ensures that the service can be restored quickly.
 
 ## Audit Logging
@@ -31,3 +31,4 @@ The Availability principle refers to the accessibility of the system as stipulat
 
 *   **Monitoring and Alerting:** The application and infrastructure are monitored using cloud-native tools (e.g., Google Cloud Monitoring). Alerts are configured to automatically notify the on-call team in the event of a security incident, performance degradation, or outage.
 *   **Incident Response Plan:** A formal incident response plan would be in place to ensure that all incidents are handled in a consistent and timely manner. This would include steps for identifying, containing, eradicating, and recovering from incidents, as well as a post-mortem process for continuous improvement.
+timely manner. This would include steps for identifying, containing, eradicating, and recovering from incidents, as well as a post-mortem process for continuous improvement.
