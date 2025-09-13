@@ -14,8 +14,8 @@ import {HandlerGetServerHealthStatus} from './handler/get-server-health-status.h
 import {SlackNotification} from './adapter/out/slack/notification.controller';
 import {BackOfficeNotification} from './adapter/out/backoffice/notification.controller';
 import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notification.repository';
-import {VendorAAdapter} from './adapter/out/vendors/vendorA/vendorA.adapter';
-import {VendorBAdapter} from './adapter/out/vendors/vendorB/vendorB.adapter';
+import {VendorAController} from './adapter/out/vendors/vendorA/vendorA.controller';
+import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controller';
 
 @Module({
   imports: [HttpModule],
@@ -57,7 +57,7 @@ import {VendorBAdapter} from './adapter/out/vendors/vendorB/vendorB.adapter';
       provide: 'BackOfficeNotification',
       useFactory: (
         slackNotification: SlackNotification,
-        configService: ConfigService
+        configService: ConfigService,
       ) => {
         return new BackOfficeNotification(slackNotification, configService);
       },
@@ -67,26 +67,26 @@ import {VendorBAdapter} from './adapter/out/vendors/vendorB/vendorB.adapter';
       provide: 'GetFeatureUseCase',
       useFactory: (
         domainDataBaseRepository: DomainDataBaseRepository,
-        backOfficeNotification: IBackOfficeNotification
+        backOfficeNotification: IBackOfficeNotification,
       ) => {
         return new GetFeatureUseCase(
           domainDataBaseRepository,
-          backOfficeNotification
+          backOfficeNotification,
         );
       },
       inject: ['DomainDataBaseRepository', 'BackOfficeNotification'],
     },
     {
-      provide: 'VendorAAdapter',
+      provide: 'VendorAController',
       useFactory: (httpService: HttpService) => {
-        return new VendorAAdapter(httpService);
+        return new VendorAController(httpService);
       },
       inject: [HttpService],
     },
     {
-      provide: 'VendorBAdapter',
+      provide: 'VendorBController',
       useFactory: (httpService: HttpService) => {
-        return new VendorBAdapter(httpService);
+        return new VendorBController(httpService);
       },
       inject: [HttpService],
     },
