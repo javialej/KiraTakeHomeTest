@@ -74,18 +74,18 @@ jobs:
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          cluster_name: kira-take-home-test-cluster
+          cluster_name: kira-cluster-cluster
           location: us-central1
       - name: Create/Update Kubernetes Secret
         run: |
           kubectl create secret generic app-secrets \
-            --from-literal=DB_HOST=${{ secrets.DB_HOST }} \
-            --from-literal=DB_PORT=${{ secrets.DB_PORT }} \
-            --from-literal=DB_USERNAME=${{ secrets.DB_USERNAME }} \
-            --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            --from-literal=DB_NAME=${{ secrets.DB_NAME }} \
-            --from-literal=SERVICE_NAME=${{ secrets.SERVICE_NAME }} \
-            --from-literal=COLLECTION_NAME=${{ secrets.COLLECTION_NAME }} \
+            --from-literal=DB_HOST=${{ secrets.DB_HOST }}
+            --from-literal=DB_PORT=${{ secrets.DB_PORT }}
+            --from-literal=DB_USERNAME=${{ secrets.DB_USERNAME }}
+            --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            --from-literal=DB_NAME=${{ secrets.DB_NAME }}
+            --from-literal=SERVICE_NAME=${{ secrets.SERVICE_NAME }}
+            --from-literal=COLLECTION_NAME=${{ secrets.COLLECTION_NAME }}
             --dry-run=client -o yaml | kubectl apply -f -
       - name: Deploy to GKE
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          cluster_name: kira-take-home-test-cluster
+          cluster_name: kira-cluster-cluster
           location: us-central1
       - name: Create/Update Kubernetes Secret
         run: |
