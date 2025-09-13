@@ -72,26 +72,47 @@ curl -X POST \
 
 ### Expected Response
 
-A successful request will return a `201 Created` status and a response body similar to this:
+A successful request will return a `201 Created` status. The system uses amount-based routing:
+-   Amounts **≤ 100** are routed to `BlockchainVendorA` and return a `CONFIRMED` status.
+-   Amounts **> 100** are routed to `BlockchainVendorB` and return a `PENDING` status.
 
+**Vendor A Response (`amount <= 100`):**
 ```json
 {
-    "meta": {
-        "trace_id": "a2c1a7b7-918a-423e-8483-3f2839f48133"
-    },
+    "meta": { "trace_id": "..." },
     "code": "OK",
     "message": "Transfer created successfully",
     "data": {
         "status": "CONFIRMED",
-        "transactionId": "0xabc-vendor-a",
+        "transactionId": "0xabc-vendor-a-...",
         "provider": "BlockchainVendorA",
         "rawData": {
             "transactionStatus": "CONFIRMED",
-            "destinationTransactionHash": "0xabc-vendor-a"
+            "destinationTransactionHash": "0xabc-vendor-a-..."
         }
     }
 }
 ```
+![Vendor A Response](./README-run-with-blockchainA.jpeg)
+
+**Vendor B Response (`amount > 100`):**
+```json
+{
+    "meta": { "trace_id": "..." },
+    "code": "OK",
+    "message": "Transfer created successfully",
+    "data": {
+        "status": "PENDING",
+        "transactionId": "0xxyz-vendor-b-...",
+        "provider": "BlockchainVendorB",
+        "rawData": {
+            "status": "PENDING",
+            "offRampTransactionId": "0xxyz-vendor-b-..."
+        }
+    }
+}
+```
+![Vendor B Response](./README-run-with-blockchainB.jpeg)
 
 ### Step 3: Cleanup
 
