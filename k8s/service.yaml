@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kira-take-home-test-service
+  annotations:
+    cloud.google.com/backend-config: '{"default": "kira-take-home-test-backend-config"}'
 spec:
   selector:
     app: kira-take-home-test
