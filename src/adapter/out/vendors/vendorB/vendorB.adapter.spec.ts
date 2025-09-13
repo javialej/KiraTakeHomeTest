@@ -1,9 +1,7 @@
-
-import { Test, TestingModule } from '@nestjs/testing';
-import { VendorBAdapter, VendorBRequestDto } from './vendorB.adapter';
-import { CustomException } from '../../../../model/exceptions/custom.model';
-import { of, throwError } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
+import {Test, TestingModule} from '@nestjs/testing';
+import {VendorBAdapter, VendorBRequestDto} from './vendorB.adapter';
+import {CustomException} from '../../../../model/exceptions/custom.model';
+import {of, throwError} from 'rxjs';
 
 describe('VendorBAdapter', () => {
   let adapter: VendorBAdapter;
@@ -31,15 +29,27 @@ describe('VendorBAdapter', () => {
   });
 
   it('should throw a CustomException if the API call fails', async () => {
-    const request: VendorBRequestDto = { paymentId: '456', destination: { name: 'test', account: '123' }, details: { amount: 200, currency: 'COP' } };
-    httpServiceMock.post.mockReturnValueOnce(throwError(() => new Error('API Error')));
+    const request: VendorBRequestDto = {
+      paymentId: '456',
+      destination: {name: 'test', account: '123'},
+      details: {amount: 200, currency: 'COP'},
+    };
+    httpServiceMock.post.mockReturnValueOnce(
+      throwError(() => new Error('API Error'))
+    );
 
-    await expect(adapter.executeTransfer(request)).rejects.toBeInstanceOf(CustomException);
+    await expect(adapter.executeTransfer(request)).rejects.toBeInstanceOf(
+      CustomException
+    );
   });
 
   it('should return data on successful API call', async () => {
-    const request: VendorBRequestDto = { paymentId: '456', destination: { name: 'test', account: '123' }, details: { amount: 200, currency: 'COP' } };
-    const response = { data: { id: 'xyz', executionStatus: 'completed' } };
+    const request: VendorBRequestDto = {
+      paymentId: '456',
+      destination: {name: 'test', account: '123'},
+      details: {amount: 200, currency: 'COP'},
+    };
+    const response = {data: {id: 'xyz', executionStatus: 'completed'}};
     httpServiceMock.post.mockReturnValueOnce(of(response));
 
     const result = await adapter.executeTransfer(request);
@@ -48,7 +58,7 @@ describe('VendorBAdapter', () => {
     expect(httpServiceMock.post).toHaveBeenCalledWith(
       'https://api.vendorb.io/v2/payments',
       request,
-      { headers: { 'Authorization': 'Bearer your-vendor-b-secret-token' } },
+      {headers: {Authorization: 'Bearer your-vendor-b-secret-token'}}
     );
   });
 });

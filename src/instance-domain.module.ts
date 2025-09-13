@@ -1,5 +1,3 @@
-
-import {firestoreClient} from './adapter/out/firestore/client.connection';
 import {DomainDataBaseRepository} from './adapter/out/firestore/domain-database.controller';
 import {UtilsDomainDatabase} from './adapter/out/firestore/utils';
 import {Module} from '@nestjs/common';
@@ -16,8 +14,8 @@ import {HandlerGetServerHealthStatus} from './handler/get-server-health-status.h
 import {SlackNotification} from './adapter/out/slack/notification.controller';
 import {BackOfficeNotification} from './adapter/out/backoffice/notification.controller';
 import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notification.repository';
-import { VendorAAdapter } from './adapter/out/vendors/vendorA/vendorA.adapter';
-import { VendorBAdapter } from './adapter/out/vendors/vendorB/vendorB.adapter';
+import {VendorAAdapter} from './adapter/out/vendors/vendorA/vendorA.adapter';
+import {VendorBAdapter} from './adapter/out/vendors/vendorB/vendorB.adapter';
 
 @Module({
   imports: [HttpModule],

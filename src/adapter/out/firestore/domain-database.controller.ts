@@ -1,15 +1,15 @@
-import {CollectionReference, DocumentData} from '@google-cloud/firestore';
+import {CollectionReference} from '@google-cloud/firestore';
 import {firestoreClient} from './client.connection';
 import {DomainEntity} from '../../../../domain/src/model/domain.entity';
 import {IDomainDataBaseRepository} from '../../../../domain/src/interface/domain-database.repository';
 import {UtilsDomainDatabase} from './utils';
 
 export class DomainDataBaseRepository implements IDomainDataBaseRepository {
-  private readonly collection: CollectionReference<DocumentData>;
+  private readonly collection: CollectionReference;
 
   constructor(private readonly utilsDomainDatabase: UtilsDomainDatabase) {
     this.collection = firestoreClient.collection(
-      this.utilsDomainDatabase.getCollectionName(),
+      this.utilsDomainDatabase.getCollectionName()
     );
   }
 
@@ -20,11 +20,11 @@ export class DomainDataBaseRepository implements IDomainDataBaseRepository {
     }
     return snapshot.docs.map(doc => {
       const data = doc.data();
-      return new DomainEntity(data.email, data.name, {
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        PK: data.PK,
-        SK: data.SK,
+      return new DomainEntity(data.email as string, data.name as string, {
+        createdAt: data.createdAt as string,
+        updatedAt: data.updatedAt as string,
+        PK: data.PK as string,
+        SK: data.SK as string,
       });
     });
   }

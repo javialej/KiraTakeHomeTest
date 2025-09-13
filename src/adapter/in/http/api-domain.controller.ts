@@ -1,4 +1,3 @@
-
 import {Controller, Get, Param, UseGuards, Post, Body} from '@nestjs/common';
 import {ApiBearerAuth, ApiParam, ApiTags} from '@nestjs/swagger';
 import {HTTPResponse} from '../../../model/dto/http-response.model';
@@ -24,7 +23,7 @@ export class ApiDomainController {
   })
   @ApiBearerAuth('Cognito-Auth')
   async getFeature(
-    @Param(new GetFeaturePipe()) email: GetFeatureRequest,
+    @Param(new GetFeaturePipe()) email: GetFeatureRequest
   ): Promise<HTTPResponse> {
     return this.handlerGetFeature.execute(email);
   }
@@ -32,16 +31,18 @@ export class ApiDomainController {
   @Post('transfer')
   @UseGuards(CognitoAuthGuard)
   @ApiBearerAuth('Cognito-Auth')
+  // eslint-disable-next-line @typescript-eslint/require-await
   async createTransfer(
-    @Body() createTransferDto: CreateTransferDto,
+    @Body() createTransferDto: CreateTransferDto
   ): Promise<HTTPResponse> {
     // In a real implementation, this would call a handler to process the transfer.
+    // eslint-disable-next-line no-console
     console.log('Received transfer request:', createTransferDto);
     return new HTTPResponse(
       201,
       SUCCESS_STATES_MESSAGES.Success.code,
       'Transfer request received.',
-      createTransferDto,
+      createTransferDto
     );
   }
 }

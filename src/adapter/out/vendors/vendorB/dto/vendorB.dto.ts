@@ -1,4 +1,3 @@
-
 export class VendorBRequestDto {
   // Properties specific to VendorB's API request
   readonly paymentId: string;

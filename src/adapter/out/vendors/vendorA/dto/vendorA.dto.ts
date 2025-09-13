@@ -1,4 +1,3 @@
-
 export class VendorARequestDto {
   // Properties specific to VendorA's API request
   readonly transactionId: string;
