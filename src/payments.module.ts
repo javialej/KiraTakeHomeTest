@@ -1,5 +1,3 @@
-
-import {firestoreClient} from './adapter/out/firestore/client.connection';
 import {DomainDataBaseRepository} from './adapter/out/firestore/domain-database.controller';
 import {UtilsDomainDatabase} from './adapter/out/firestore/utils';
 import {Module} from '@nestjs/common';
@@ -7,21 +5,22 @@ import {ConfigService} from '@nestjs/config';
 import {HttpModule, HttpService} from '@nestjs/axios';
 import {IHealthRepository} from 'domain/src/interface/health.repository';
 import {GetHealthUseCase} from 'domain/src/usecase/get-health.usecase';
-import {GetFeatureUseCase} from '../domain/src/usecase/get-feature.usecase';
-import {ApiDomainController} from './adapter/in/http/api-domain.controller';
+import {ApiPaymentsController} from './adapter/in/http/api-payments.controller';
 import {HealthController} from './adapter/in/http/health.controller';
 import {TypeOrmHealthRepository} from './adapter/out/postgres/typeorm-health.repository';
-import {HandlerGetFeature} from './handler/get-feature.handler';
 import {HandlerGetServerHealthStatus} from './handler/get-server-health-status.handler';
 import {SlackNotification} from './adapter/out/slack/notification.controller';
 import {BackOfficeNotification} from './adapter/out/backoffice/notification.controller';
 import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notification.repository';
-import { VendorAAdapter } from './adapter/out/vendors/vendorA/vendorA.adapter';
-import { VendorBAdapter } from './adapter/out/vendors/vendorB/vendorB.adapter';
+import {VendorAController} from './adapter/out/vendors/vendorA/vendorA.controller';
+import {VendorBController} from './adapter/out/vendors/vendorB/vendorB.controller';
+
+import {PostCreateTransferUseCase} from '../domain/src/usecase/post-create-transfer.usecase';
+import {PostCreateTransferHandler} from './handler/post-create-transfer.handler';
 
 @Module({
   imports: [HttpModule],
-  controllers: [HealthController, ApiDomainController],
+  controllers: [HealthController, ApiPaymentsController],
   providers: [
     {
       provide: 'TypeOrmHealthRepository',
@@ -59,41 +58,35 @@ import { VendorBAdapter } from './adapter/out/vendors/vendorB/vendorB.adapter';
       provide: 'BackOfficeNotification',
       useFactory: (
         slackNotification: SlackNotification,
-        configService: ConfigService
+        configService: ConfigService,
       ) => {
         return new BackOfficeNotification(slackNotification, configService);
       },
       inject: ['SlackNotification', ConfigService],
     },
     {
-      provide: 'GetFeatureUseCase',
-      useFactory: (
-        domainDataBaseRepository: DomainDataBaseRepository,
-        backOfficeNotification: IBackOfficeNotification
-      ) => {
-        return new GetFeatureUseCase(
-          domainDataBaseRepository,
-          backOfficeNotification
-        );
+      provide: 'PostCreateTransferUseCase',
+      useFactory: () => {
+        return new PostCreateTransferUseCase();
       },
-      inject: ['DomainDataBaseRepository', 'BackOfficeNotification'],
+      inject: [],
     },
     {
-      provide: 'VendorAAdapter',
+      provide: 'VendorAController',
       useFactory: (httpService: HttpService) => {
-        return new VendorAAdapter(httpService);
+        return new VendorAController(httpService);
       },
       inject: [HttpService],
     },
     {
-      provide: 'VendorBAdapter',
+      provide: 'VendorBController',
       useFactory: (httpService: HttpService) => {
-        return new VendorBAdapter(httpService);
+        return new VendorBController(httpService);
       },
       inject: [HttpService],
     },
-    HandlerGetFeature,
     HandlerGetServerHealthStatus,
+    PostCreateTransferHandler,
   ],
 })
-export class InstanceDomainModule {}
+export class PaymentsModule {}

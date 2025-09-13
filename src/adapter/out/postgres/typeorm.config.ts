@@ -47,7 +47,7 @@ export const typeOrmConfig = (): PostgresConnectionOptions => {
   return config;
 };
 
-const getPassword = async (auth: AuthMechanism): Promise<string> => {
+const getPassword = (auth: AuthMechanism): string => {
   if (auth === AuthMechanism.PASSWORD) return process.env.DB_PASSWORD!;
   throw new Error(`Unsupported authentication mechanism: ${auth}`);
 };
