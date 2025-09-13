@@ -172,9 +172,15 @@ The project uses two distinct GitHub Actions workflows to separate infrastructur
 
 ### 1. Infrastructure Pipeline (`infrastructure.yml`)
 
--   **Purpose**: Manages the lifecycle of the core cloud infrastructure (VPC, GKE Cluster, etc.).
+-   **Purpose**: Manages the lifecycle of the core cloud infrastructure (VPC, GKE Cluster, etc.) for a specific environment.
 -   **Trigger**: Manual execution (`workflow_dispatch`).
--   **Details**: This workflow should be run once to provision an environment and only re-run when infrastructure changes are needed.
+-   **How to Run**:
+    1.  Navigate to the **Actions** tab in the GitHub repository.
+    2.  Select the **Infrastructure CI/CD** workflow from the list.
+    3.  Click the **Run workflow** button.
+    4.  Use the dropdown menu to select the target environment (`development` or `production`).
+    5.  Click the green **Run workflow** button to start the process.
+-   **Details**: This workflow uses Terraform workspaces to create and manage isolated infrastructure for each environment. It should be run once to provision a new environment and only re-run when infrastructure changes are needed.
 
 ### 2. Application CI/CD Pipeline (`ci-cd.yml`)
 
