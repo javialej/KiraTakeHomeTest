@@ -192,7 +192,32 @@ The project uses two distinct GitHub Actions workflows to separate infrastructur
 
 ### CI/CD Configuration and Secrets
 
-For the pipelines to run, you must configure secrets in your GitHub repository. For detailed instructions, see the **CI/CD Configuration** section in the [Architecture Document](./ARCHITECTURE.md).
+For the pipelines to run, you must configure your GCP project and add the following secrets to your GitHub repository.
+
+#### Required Secrets
+
+-   `GCP_PROJECT_ID`: The unique ID of your Google Cloud project.
+-   `DB_HOST`: The hostname or IP address of the database server.
+-   `DB_PORT`: The port number of the database server.
+-   `DB_USERNAME`: The username for the database connection.
+-   `DB_PASSWORD`: The password for the database connection.
+-   `DB_NAME`: The name of the database.
+-   `SERVICE_NAME`: The name of the service (e.g., `kira-payments`).
+-   `COLLECTION_NAME`: The name of the Firestore collection.
+
+#### How to Add Secrets to GitHub
+
+1.  **Navigate to your GitHub Repository:**
+    Open your web browser and go to your repository's main page.
+
+2.  **Go to Settings:**
+    Click on the **Settings** tab in the main navigation bar.
+
+3.  **Access Actions Secrets:**
+    In the left sidebar, navigate to **Secrets and variables** > **Actions**.
+
+4.  **Add Each Secret:**
+    Click the **New repository secret** button. Enter the secret's name (e.g., `DB_HOST`) in the "Name" field and paste its value in the "Secret" field. Click **Add secret** and repeat this process for all the required secrets listed above.
 
 ---
 
