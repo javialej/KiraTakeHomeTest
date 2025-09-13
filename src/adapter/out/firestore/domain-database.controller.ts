@@ -1,9 +1,10 @@
 import {CollectionReference, DocumentData} from '@google-cloud/firestore';
 import {firestoreClient} from './client.connection';
-import {IFeature} from '../../../../domain/src/model/feature';
-import {Feature} from '../../../model/feature.model';
+import {DomainEntity} from '../../../../domain/src/model/domain.entity';
+import {IDomainDataBaseRepository} from '../../../../domain/src/interface/domain-database.repository';
+import {UtilsDomainDatabase} from './utils';
 
-export class DomainDataBaseRepository {
+export class DomainDataBaseRepository implements IDomainDataBaseRepository {
   private readonly collection: CollectionReference<DocumentData>;
 
   constructor(private readonly utilsDomainDatabase: UtilsDomainDatabase) {
@@ -12,8 +13,19 @@ export class DomainDataBaseRepository {
     );
   }
 
-  async getFeatureByCountry(country: string): Promise<IFeature> {
-    const feature = await this.collection.doc(country).get();
-    return new Feature(feature.data());
+  async getFeatureBy(PKDomain: string): Promise<DomainEntity[]> {
+    const snapshot = await this.collection.where('PK', '==', PKDomain).get();
+    if (snapshot.empty) {
+      return [];
+    }
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return new DomainEntity(data.email, data.name, {
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        PK: data.PK,
+        SK: data.SK,
+      });
+    });
   }
 }

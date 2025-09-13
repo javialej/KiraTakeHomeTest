@@ -4,13 +4,13 @@ import { IsString, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 export class CreateTransferDto {
   @IsNumber()
   @IsPositive()
-  readonly amount: number;
+  readonly amount!: number;
 
   @IsString()
   @IsNotEmpty()
-  readonly vendor: string;
+  readonly vendor!: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly txhash: string;
+  readonly txhash!: string;
 }

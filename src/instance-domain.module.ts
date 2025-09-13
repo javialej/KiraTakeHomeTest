@@ -1,3 +1,4 @@
+
 import {firestoreClient} from './adapter/out/firestore/client.connection';
 import {DomainDataBaseRepository} from './adapter/out/firestore/domain-database.controller';
 import {UtilsDomainDatabase} from './adapter/out/firestore/utils';
@@ -15,6 +16,8 @@ import {HandlerGetServerHealthStatus} from './handler/get-server-health-status.h
 import {SlackNotification} from './adapter/out/slack/notification.controller';
 import {BackOfficeNotification} from './adapter/out/backoffice/notification.controller';
 import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notification.repository';
+import { VendorAAdapter } from './adapter/out/vendors/vendorA/vendorA.adapter';
+import { VendorBAdapter } from './adapter/out/vendors/vendorB/vendorB.adapter';
 
 @Module({
   imports: [HttpModule],
@@ -74,6 +77,20 @@ import {IBackOfficeNotification} from 'domain/src/interface/backoffice-notificat
         );
       },
       inject: ['DomainDataBaseRepository', 'BackOfficeNotification'],
+    },
+    {
+      provide: 'VendorAAdapter',
+      useFactory: (httpService: HttpService) => {
+        return new VendorAAdapter(httpService);
+      },
+      inject: [HttpService],
+    },
+    {
+      provide: 'VendorBAdapter',
+      useFactory: (httpService: HttpService) => {
+        return new VendorBAdapter(httpService);
+      },
+      inject: [HttpService],
     },
     HandlerGetFeature,
     HandlerGetServerHealthStatus,

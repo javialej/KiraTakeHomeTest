@@ -6,7 +6,8 @@ import {CognitoAuthGuard} from '../../../common/guards/cognito-auth.guard';
 import {HandlerGetFeature} from '../../../handler/get-feature.handler';
 import {GetFeatureRequest} from '../../../model/dto/feature.type';
 import {GetFeaturePipe} from './get-feature.pipe';
-import { CreateTransferDto } from './dto/create-transfer.dto';
+import {SUCCESS_STATES_MESSAGES} from '../../../common/response-states/success-states.messages';
+import {CreateTransferDto} from './dto/create-transfer.dto';
 
 @ApiTags('Api Domain')
 @Controller('api-domain')
@@ -23,7 +24,7 @@ export class ApiDomainController {
   })
   @ApiBearerAuth('Cognito-Auth')
   async getFeature(
-    @Param(new GetFeaturePipe()) email: GetFeatureRequest
+    @Param(new GetFeaturePipe()) email: GetFeatureRequest,
   ): Promise<HTTPResponse> {
     return this.handlerGetFeature.execute(email);
   }
@@ -31,13 +32,16 @@ export class ApiDomainController {
   @Post('transfer')
   @UseGuards(CognitoAuthGuard)
   @ApiBearerAuth('Cognito-Auth')
-  async createTransfer(@Body() createTransferDto: CreateTransferDto): Promise<HTTPResponse> {
+  async createTransfer(
+    @Body() createTransferDto: CreateTransferDto,
+  ): Promise<HTTPResponse> {
     // In a real implementation, this would call a handler to process the transfer.
     console.log('Received transfer request:', createTransferDto);
-    return {
-        statusCode: 201,
-        message: 'Transfer request received.',
-        data: createTransferDto,
-    };
+    return new HTTPResponse(
+      201,
+      SUCCESS_STATES_MESSAGES.Success.code,
+      'Transfer request received.',
+      createTransferDto,
+    );
   }
 }
