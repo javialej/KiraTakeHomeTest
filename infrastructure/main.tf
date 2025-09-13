@@ -1,4 +1,3 @@
-
 terraform {
   backend "gcs" {
     bucket  = "kiratakehometest-tfstate"
@@ -36,10 +35,6 @@ module "artifact-registry" {
   gcp_project_id = var.gcp_project_id
   gcp_region     = var.gcp_region
   project_name   = var.project_name
-}
-
-resource "google_compute_global_address" "static_ip" {
-  name = "kira-take-home-test-static-ip"
 }
 
 resource "google_compute_global_address" "static_ip" {
