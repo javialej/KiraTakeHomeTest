@@ -1,0 +1,34 @@
+# Versioning and metadata
+.git
+.gitignore
+.dockerignore
+.nvmrc
+
+# Build dependencies
+dist
+node_modules
+coverage
+
+# Environment variables
+.env
+.env.example
+
+# Files not required for production
+.editorconfig
+Dockerfile
+README.md
+README-hexarch-diagram.svg
+eslint.config.mjs
+.prettierrc.yaml
+docker-compose.yml
+Makefile
+localstack-config
+
+# Testing and CI files
+__mocks__
+e2e
+sonar-project.properties
+jest.config.js
+.github
+.devcontainer
+.snyk
