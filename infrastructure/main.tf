@@ -41,3 +41,7 @@ module "artifact-registry" {
 resource "google_compute_global_address" "static_ip" {
   name = "kira-take-home-test-static-ip"
 }
+
+resource "google_compute_global_address" "static_ip" {
+  name = "kira-take-home-test-static-ip"
+}
