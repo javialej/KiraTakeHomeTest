@@ -1,7 +1,6 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {ApiDomainController} from './api-domain.controller';
 import {HandlerGetFeature} from 'src/handler/get-feature.handler';
-import {CognitoAuthGuard} from 'src/common/guards/cognito-auth.guard';
 import {HTTPResponse} from 'src/model/dto/http-response.model';
 import {GetFeatureRequest} from 'src/model/dto/feature.type';
 
@@ -20,14 +19,7 @@ describe('ApiDomainController', () => {
           },
         },
       ],
-    })
-      .overrideGuard(CognitoAuthGuard)
-      .useValue({
-        canActivate: () => {
-          return true;
-        },
-      })
-      .compile();
+    }).compile();
 
     controller = module.get<ApiDomainController>(ApiDomainController);
     handlerGetFeature = module.get<HandlerGetFeature>(HandlerGetFeature);

@@ -6,7 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white&style=plastic)](https://www.typescriptlang.org/)
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
-# Kira Take-Home Test - Platform Engineer
+# Payments API Module - Kira Take-Home Test: Platform Engineer
 
 ## Description
 
